@@ -4,4 +4,6 @@ testpkgdir
 *.swp
 *.log
 *.html
+*.pcap
+*.pcapng
 
