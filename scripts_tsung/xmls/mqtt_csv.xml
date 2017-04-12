@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<!DOCTYPE tsung SYSTEM "/usr/share/tsung/tsung-1.0.dtd">
+<tsung loglevel="notice" version="1.0">
+   	 <clients>
+   	     <client host="zhilu-ubuntu01" weight="1" maxusers="10000">
+   	     	<ip value="192.168.10.166"></ip>	
+   	     </client>
+   	     			
+   	    <!--<client host="zhilu-ubuntu02" weight="1" maxusers="6000">
+   	     	<ip value="192.168.10.164"></ip>
+   	    </client> -->
+   	 </clients>
+	<servers>
+          <server host="192.168.10.8" port="1883" type="tcp" />
+	</servers>
+
+    <load>
+		<!--指定要加载的session，如果未配置arrivalphase，可以实现单个用户，user session是必选项
+		  probability对于user session无效,user session是用于执行一次指定的session	-->
+		<!-- <user session="mqtt_subscriber" start_time="1" unit="second"></user> -->
+		<!-- <user session="mqtt_publisher" start_time="35" unit="second"></user> -->
+		
+		<!--arrivalphase可以创建一组session,设置创建session的最大次数和创建session的速率及session之间的权重等 -->
+		<!--此配置默认会针对所有session生效 可以使用probability或weight来配置session的权重,可以创建多个arrivalphase,多个arrivalphase使用phase的不同值来区分-->
+		<!--user session与arrivalphase可以配合使用 -->
+		<!--多个arrivalphase是按顺序执行执行的，-个arrivalphase对应一组session,可以通过session_setup与probability或weight组合来实现arrivalphase的配置只对某些session，
+		对某些session不生效, 如下phase="1"中，mqtt_subscriber1 session的probability=100,mqtt_publisher session的probabity为0
+		这样相当于phase=1执行时只会执行mosquitto_subscriber1 session-->
+		
+		<!-- 如果要创建subscirber maxnumber 10000个，每秒50个session(arrivalrate="50"每秒50)，
+		需10000/50=200s,但在实际设置时duration要略大于这个时间如220，这样才能保证所有的订阅都能成功，并且sesseion 中sub的等待
+			<mqtt type="waitForMessages" timeout="240"></mqtt>要略大于duration比如设置为240-->
+		<arrivalphase phase="1" duration="420" unit="second"> 
+			<session_setup name="mqtt_subscriber" probability="100" /> 
+			<session_setup name="mqtt_publisher" probability="0" /> 
+			<users maxnumber="10000" arrivalrate="50" unit="second"/> 
+		 </arrivalphase> 
+		 
+		 <arrivalphase phase="2" duration="420" unit="second"> 
+			<session_setup name="mqtt_subscriber" probability="0"/> 
+			<session_setup name="mqtt_publisher" probability="100" /> 
+			<users maxnumber="10000" arrivalrate="50" unit="second"/> 
+		</arrivalphase> 
+    </load>
+
+    <options>
+		<option name="ports_range" min="1025" max="65535"/>		
+		<option name="file_server" id="subcsv" value="./csvs/sub.csv"/>		
+		<option name="file_server" id="pubcsv" value="./csvs/pub.csv"/>
+   </options>
+ 			
+    <sessions> 	
+	
+		<session name="mqtt_publisher" probability="50" type="ts_mqtt">			 
+			<setdynvars sourcetype="file" fileid="pubcsv" delimiter="," order="iter">
+				<var name="pubid" />
+				<var name="pubtopic" />
+				<var name="pubmsg" />
+			</setdynvars>
+			
+			<request subst="true">
+				<mqtt type="connect" clean_start="true" username="mqttclient" password="mqttclient" client_id="%%_pubid%%"></mqtt>
+			</request>           
+				
+			<request subst="true">
+				<mqtt type="publish" topic="%%_pubtopic%%">%%_pubmsg%%</mqtt>
+			</request>
+			
+           	<request>
+               		 <mqtt type="disconnect"></mqtt>
+           	</request>
+       	</session>
+
+ 		<session name="mqtt_subscriber" probability="50" type="ts_mqtt">
+		
+			<setdynvars sourcetype="file" fileid="subcsv" delimiter="," order="iter">
+				<var name="subid" />
+				<var name="subtopic" />
+			</setdynvars>
+	
+			<request subst="true">
+				<mqtt type="connect" clean_start="true" keepalive="60" username="mqttclient" password="mqttclient" client_id="%%_subid%%"></mqtt>
+			</request>
+
+			<request subst="true">
+				<mqtt type="subscribe" topic="%%_subtopic%%"></mqtt>
+			</request>
+				
+			<!-- <thinktime value="0.5"></thinktime -->
+			
+			<request>
+				<!-- wait for 60s -->
+				<mqtt type="waitForMessages" timeout="440"></mqtt>
+			</request>
+
+			<!-- <request subst="true"> -->
+				<!-- <mqtt type="unsubscribe" topic="%%_subtopic%%"></mqtt> -->
+			<!-- </request> -->
+
+			<request>
+				<mqtt type="disconnect"></mqtt>
+			</request>
+			
+        </session>	
+	
+    </sessions>
+</tsung>

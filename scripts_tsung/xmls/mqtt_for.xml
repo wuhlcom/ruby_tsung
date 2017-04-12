@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<!DOCTYPE tsung SYSTEM "/usr/share/tsung/tsung-1.0.dtd">
+<tsung loglevel="notice" version="1.0">
+    <clients>
+        <client host="zhilu-ubuntu01" maxusers="6000" use_controller_vm="true"></client>
+    </clients>
+
+	<servers>
+       <server host="192.168.10.8" port="1883" type="tcp" />
+	</servers>
+
+    <load>
+	    <!--指定要加载的session，如果未配置arrivalphase，可以实现单个用户，user session是必选项 -->
+		<user session="mqtt_subscriber" start_time="5" unit="second"></user> 		 	 
+		<user session="mqtt_publisher" start_time="10" unit="second"></user> 
+		
+		<!--arrivalphase可以创建一组session,设置创建session的次数和创建session的速率及session之间的权重等 -->
+		<!--此配置会针对所有session生效 可以使用probability或weight来分配置session的使用率,可以创建多个arrivalphase,多个arrivalphase使用phase的不同值来区分-->
+	    <!-- user session与arrivalphase通常配合使用 -->
+		 <arrivalphase phase="1" duration="5" unit="second">  
+		    <!-- session_setup覆盖指定session中的配置 -->
+		   <session_setup name="mqtt_subscriber" weight="1"/> 
+		   <session_setup name="mqtt_publisher"  weight="1"/> 
+			<!-- <users  interarrival="1" unit="second"/> -->
+			<!-- 限定最大session数量和创建session速率 -->
+		    <users maxnumber="1" arrivalrate="50" unit="second"/> 
+	      </arrivalphase>		  
+	
+    </load>
+
+	<options>
+	    <!--端口范围-->		
+		<option name="ports_range" min="1025" max="65535"/>
+		<!--全局requests之间的间隔，如果override为true会覆盖session中的thinktime -->
+		<!-- <option name="thinktime" value="3" random="false" override="true"/> -->
+	</options>
+			
+    <sessions>
+        <session name="mqtt_subscriber" weight="1" type="ts_mqtt">
+				<!--设置连接超时-->
+			    <!-- <set_option name="connect_timeout" value="1000" /> -->
+			<for from="1" to="1000" incr="1" var="sub">
+				<request subst="true">
+					<mqtt type="connect" clean_start="true" keepalive="60" username="mqttclient" password="mqttclient" client_id="tsungSub%%_sub%%"></mqtt>
+				</request>			
+		
+				<request subst="true">
+					<mqtt type="subscribe" topic="test_topic%%_sub%%"></mqtt>
+				</request>					
+				<!-- <thinktime value="0.5"></thinktime -->				
+				<request>
+					<!-- wait for 60s -->
+					<mqtt type="waitForMessages" timeout="60"></mqtt>
+				</request>
+
+				<!-- <request subst="true"> -->
+					<!-- <mqtt type="unsubscribe" topic="test_topic1"></mqtt> -->
+				<!-- </request> -->
+				
+				<request>
+					<mqtt type="disconnect"></mqtt>
+				</request>	
+			</for>
+        </session>		
+		
+		<session name="mqtt_publisher" weight="1" type="ts_mqtt">	
+			<for from="1" to="1000" incr="1" var="pub">
+				<request subst="true">
+					<mqtt type="connect" clean_start="true" username="mqttclient" password="mqttclient" client_id="tsungPub%%_pub%%"></mqtt>
+				</request>           
+					
+				<request subst="true">
+					<mqtt type="publish" topic="test_topic%%_pub%%">hello</mqtt>
+				</request>
+				
+				<request>
+					<mqtt type="disconnect"></mqtt>
+				</request>
+			</for>
+        </session>
+	
+    </sessions>
+</tsung>

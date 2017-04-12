@@ -1,0 +1,5 @@
+1 tshark.rb用于抓包，解析报文--- 多机抓包，多机多报文解析？
+2 recorder.rb用于处理数据库sqlite3或mysql或postgresql --- 解析结果分类和处理？
+3 tsung.rb 执行tsung命令     
+4 xml解析--未实现
+5 WEB显示数据库结果,ruby生成html报告？

@@ -1,0 +1,7 @@
+captures/
+logs/
+testpkgdir
+*.swp
+*.log
+*.html
+

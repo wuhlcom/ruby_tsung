@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<!DOCTYPE tsung SYSTEM "/usr/share/tsung/tsung-1.0.dtd">
+<tsung loglevel="notice" version="1.0">
+    <clients>
+        <client host="ubuntu" maxusers="60000"></client>
+    </clients>
+
+	<servers>
+       <server host="192.168.10.8" port="1883" type="tcp" />
+	</servers>
+
+    <load>
+		 <user session="mqtt_publisher" start_time="220" unit="second"></user> 
+		 <arrivalphase phase="1" duration="200" unit="second"> 
+			<users maxnumber="9999" arrivalrate="50" unit="second"/> 
+	     </arrivalphase> 
+    </load>
+
+    <!-- <option name="hibernate" value="5"></option> -->
+	<!-- <option name="tcp_reuseaddr" value="true"/> -->
+	<!-- <option name="tcp_snd_buffer" value="16384"></option> -->
+	<!-- <option name="tcp_rcv_buffer" value="16384"></option> -->
+	<options>
+		<option name="file_server" id="clientid1" value="/opt/apps/tsung-1.6.0/src/test/1.csv"/>
+		<option name="file_server" id="clientid2" value="/opt/apps/tsung-1.6.0/src/test/2.csv"/>
+	</options>
+			
+    <sessions>
+        <session name="mqtt_subscriber1" probability="50" type="ts_mqtt">
+		
+			<setdynvars sourcetype="file" fileid="clientid1" delimiter=";" order="iter">
+				<var name="subcli1" />
+			</setdynvars>
+	
+			<request subst="true">
+				<mqtt type="connect" clean_start="true" keepalive="200" username="test" password="test" client_id="%%_subcli1%%"></mqtt>
+			</request>
+
+			<request subst="true">
+				<mqtt type="subscribe" topic="test_topic"></mqtt>
+			</request>
+				
+			<!-- <thinktime value="0.5"></thinktime -->
+			
+			<request>
+				<!-- wait for 60s -->
+				<mqtt type="waitForMessages" timeout="200"></mqtt>
+			</request>
+
+			<request subst="true">
+				<mqtt type="unsubscribe" topic="test_topic"></mqtt>
+			</request>
+
+			<request>
+				<mqtt type="disconnect"></mqtt>
+			</request>
+        </session>
+		
+		<session name="mqtt_subscriber2" probability="50" type="ts_mqtt">
+		
+			<setdynvars sourcetype="file" fileid="clientid2" delimiter=";" order="iter">
+				<var name="subcli2" />
+			</setdynvars>
+	
+			<request subst="true">
+				<mqtt type="connect" clean_start="true" keepalive="200" username="test" password="test" client_id="%%_subcli2%%"></mqtt>
+			</request>
+
+			<request subst="true">
+				<mqtt type="subscribe" topic="test_topic"></mqtt>
+			</request>
+				
+			<!-- <thinktime value="0.5"></thinktime -->
+			
+			<request>
+				<!-- wait for 60s -->
+				<mqtt type="waitForMessages" timeout="200"></mqtt>
+			</request>
+
+			<request subst="true">
+				<mqtt type="unsubscribe" topic="test_topic"></mqtt>
+			</request>
+
+			<request>
+				<mqtt type="disconnect"></mqtt>
+			</request>
+        </session>
+		
+		<session name="mqtt_publisher" probability="0" type="ts_mqtt">
+			
+			<request subst="true">
+				<mqtt type="connect" clean_start="true" username="test" password="test" client_id="subcli60000"></mqtt>
+			</request>           
+				
+			<request subst="true">
+				<mqtt type="publish" topic="test_topic">popopopopopopopopopopopopopopopop</mqtt>
+			</request>
+			
+            <request>
+                <mqtt type="disconnect"></mqtt>
+            </request>
+        </session>
+	
+    </sessions>
+</tsung>
