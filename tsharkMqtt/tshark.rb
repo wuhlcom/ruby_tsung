@@ -272,8 +272,8 @@ if __FILE__==$0
  #  	 x.report("pubs"){ 		
    	    tshark=ZL::Tshark.new() 	
 	    tshark.write_records(ex_filter,pub_filter,rev_filter)
-	 	#tshark.write_result
-		#tshark.capture(cap_filter,10,1)	
+ 	    #tshark.write_result
+	   #tshark.capture(cap_filter,10,1)	
 	
 # 	 }
   #end

@@ -6,20 +6,21 @@ tshark_process="tshark"
 ###xmlpath
 xmlpath="./xmls/mqtt_csv.xml"
 ####ruby server ip and port
-ip="192.168.10.164"
+drbsrv_ip="192.168.10.164"
+mqttsrv_ip="192.168.10.200"
 port="65534"
-URI_ADDR="druby://#{ip}:#{port}"
+URI_ADDR="druby://#{drbsrv_ip}:#{port}"
 ###capture parameters
 filesize=2000
 filenum=2
 filename="mqtt" 
 cap_filter="tcp port 1883"
 ###parse packets filters
-ex_filter="mqtt.msgtype==3 && (ip.src==192.168.10.166||ip.src==192.168.10.8)"
-ex_filter2="mqtt.msgtype==3 && (ip.src==192.168.10.164||ip.src==192.168.10.8)"
+ex_filter="mqtt.msgtype==3 && (ip.src==#{mqttsrv_ip}||ip.src==192.168.10.166)"
+ex_filter2="mqtt.msgtype==3 && (ip.src==#{mqttsrv_ip}||ip.src==192.168.10.164)"
 pub_filter="mqtt.msgtype==3 && ip.src==192.168.10.166"
 pub_filter2="mqtt.msgtype==3 && ip.src==192.168.10.164"
-rev_filter="mqtt.msgtype==3 && ip.src==192.168.10.8"
+rev_filter="mqtt.msgtype==3 && ip.src==#{mqttsrv_ip}"
 ###DRb
 DRb.start_service
 r_tshark=DRbObject.new_with_uri(URI_ADDR)
@@ -30,7 +31,7 @@ r_tshark=DRbObject.new_with_uri(URI_ADDR)
 puts "[#{Time.now}]step 1: capture beginning....."
 l_tshark=ZL::Tshark.new() 	
 #本地客户端抓包
-l_tshark.capture(cap_filter,10,1)	
+l_tshark.capture(cap_filter,filesize,filenum)	
 #远程客户端抓包
 r_tshark.capture(cap_filter,filesize,filenum)
 

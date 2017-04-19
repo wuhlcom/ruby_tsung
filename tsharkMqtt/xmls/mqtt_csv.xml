@@ -11,7 +11,7 @@
    	    </client>
    	 </clients>
 	<servers>
-          <server host="192.168.10.8" port="1883" type="tcp" />
+          <server host="192.168.10.200" port="1883" type="tcp" />
 	</servers>
 
     <load>
