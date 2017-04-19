@@ -7,7 +7,7 @@ require 'yaml'
 module ZL
   module Recorder 
 
-   DBCONF = YAML::load(File.open('./database/database.yml'))  
+   DBCONF = YAML::load(File.open('database/database.yml'))  
    configuration=DBCONF["mysql"]
 
    begin
