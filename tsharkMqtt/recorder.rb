@@ -7,20 +7,31 @@ require 'yaml'
 module ZL
   module Recorder 
 
-    DBCONF = YAML::load(File.open('./database/database.yml'))     
-    ActiveRecord::Base.establish_connection(DBCONF)   
+   DBCONF = YAML::load(File.open('./database/database.yml'))  
+   configuration=DBCONF["mysql"]
+
+   begin
+   	 #初始化mysql数据库对象
+   	 mysql=ActiveRecord::Tasks::MySQLDatabaseTasks.new(configuration)
+   	 #创建数据库
+   	 mysql.create
+   rescue =>ex 
+     p ex.message
+   end
+  
+    ActiveRecord::Base.establish_connection(configuration)   
     @@adapter=ActiveRecord::Base.connection
-    DEBUG=false #调试专用
-    if DEBUG
     #判断数据表是否存在，不存在则创建
-    # unless @@adapter.data_source_exists?(:delays)
+    unless @@adapter.data_source_exists?(:delays)
       puts "creating table delays....."
       @@adapter.create_table :delays, force: true do |t|       
          t.time  :pub_time  
          t.decimal :delay_time 
          t.timestamps
-      end 
+      end
+    end 
    
+    unless @@adapter.data_source_exists?(:pubs)
       puts "creating table pubs....."
       @@adapter.create_table :pubs, force: true do |t|       
          t.time :pub_time  
@@ -30,13 +41,17 @@ module ZL
          t.text :topic 
          t.timestamps
       end 
+    end
     
+    unless @@adapter.data_source_exists?(:errors)
       puts "creating table errors....."
       @@adapter.create_table :errors, force: true do |t|         
          t.text :msg 
          t.timestamps
       end 
+    end
     
+    unless @@adapter.data_source_exists?(:results)
       puts "creating table results....."
       @@adapter.create_table :results, force: true do |t| 
          t.decimal :average_delay      
@@ -48,7 +63,7 @@ module ZL
     end 
 
     class Delay < ActiveRecord::Base    
-       # establish_connection(DBCONF)  
+       # establish_connection(configuration)  
        # connection.create_table table_name, force: true do |t|
        #    t.string :clientID
        #    t.time  :pub_time  
@@ -111,5 +126,3 @@ module ZL
 
   end #Recorder
  end #ZL 
-
-

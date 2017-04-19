@@ -1,2 +1,15 @@
-adapter: sqlite3
-database: zl_mqtt.db
+defaults: &defaults 
+  host:     192.168.10.166
+  username: root
+  password: 
+  pool: 5
+  timeout: 5000
+
+mysql:
+  adapter:  mysql2
+  database: zl_mqtt
+  <<: *defaults
+
+slqite3:  
+  adapter: sqlite3
+  database: zl_mqtt.db

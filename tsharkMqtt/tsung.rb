@@ -5,14 +5,14 @@ module ZL
 
 	   include PubMethods 
 
-	   def initialize(xmlpath,logdir="logs")
+	   def initialize(xmlpath,logdir="tsungLogs")
 	   	    @xmlpath=xmlpath
 	   	    @logdir=logdir
 	   		mk_dir(@logdir)
 	   end
 
-	   def tsung() 
-		   system(tsung -f @xmlpath -l @logdir start)
+	   def tsung_start() 
+		   system("tsung -f #@xmlpath -l #@logdir start")
 	   end
 
 	end #tsung
@@ -20,6 +20,8 @@ module ZL
 end #ZL
 
 if __FILE__==$0
-   include ZL::Tsung
-   Tsung.new()
+   xmlpath="./xmls/mqtt_csv.xml"	
+   tsung=ZL::Tsung.new(xmlpath)
+   p tsung.tsung_start
 end
+

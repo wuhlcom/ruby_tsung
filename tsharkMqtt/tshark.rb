@@ -22,9 +22,10 @@ module ZL
     FIELDS="-e frame.time -e #{MQTOPIC} -e #{MQMSG}" 
     EMPTYFLAG=false #调试使用当为true会清空数据库表
 
-    def initialize(pkgsdir,filename)
+    def initialize(pkgsdir="packets",filename="tsung_mqtt")
+       pkgsdir="./#{pkgsdir}/#{Time.now.strftime("%Y%m%d-%H%M%S")}"
        @pkgsdir=pkgsdir
-       @pkgs_expdir="#{pkgsdir}/expkgs"
+       @pkgs_expdir="#{@pkgsdir}/expkgs"
        mk_dir(@pkgs_expdir)
        @filename=filename
        @pkgspath="#{@pkgsdir}/#{@filename}"
@@ -50,15 +51,15 @@ module ZL
      #tshark -i eth0 -f "tcp port 1883" -w mqtt.pcapng -a filesize:1000000 -a files:10
      def capture(filter,filesize=200000,fileNumber=10,intf="eth0")
         begin
-		@capthr=Thread.new do
-       		   rs=`sudo tshark -i #{intf} -f "#{filter}" -w #{@pkgspath} -a filesize:#{filesize} -a files:#{fileNumber}`
-		end
+			@capthr=Thread.new do
+	       		   rs=`sudo tshark -i #{intf} -f "#{filter}" -w #{@pkgspath} -a filesize:#{filesize} -a files:#{fileNumber}`
+			end
         	sleep 5
-	#	@capthr.abort_on_exception=true
-	rescue =>ex
+	        #@capthr.abort_on_exception=true
+		rescue =>ex
 	       puts ex.message.to_s
-	end
-	return @capthr
+		end
+		return @capthr
      end 
     
      def stop_cap
@@ -67,7 +68,7 @@ module ZL
 	        sleep 2
          end
 	 return @capthr
-     end
+    end
     #过滤出要解析的所有报文并保存
     #tshark -r mqtt.pcapng -Y "mqtt.msgtype==3 && (ip.src==192.168.10.166||ip.src==192.168.10.8)" -w tsung.pcapng 
     #为了提高解析效率这里对报文进行一次显示过滤并保存
@@ -187,7 +188,7 @@ module ZL
     # tshark -r mqtt.pcapng -Tfields -e frame.time -e ip.src -e ip.dst -e mqtt.msg -e mqtt.topic -Y "mqtt.msgtype==3 && ip.src==192.168.10.166"
     #针对pub，解析报文并保存到数据库
     #pkgsize，一次写入数据库条目数，修改此值能略微提高速率
-	def pub_pkg(filter,efields="",pkgsize=300)
+	def pub_pkg(filter,efields="",pkgsize)
 		self.empty_pub if EMPTYFLAG
 		fail("pkgsize must not more than 500") if pkgsize>500
 	    pkgs=[]	
@@ -225,7 +226,13 @@ module ZL
 		end
 	end
 
-	def write_records(ex_filter,pub_filter,rev_filter,pub_efields="",rev_efields="",pkgsize=50)
+    # ex_filter,导出报文过滤条件
+    # pub_filter,发布消息过滤条件
+    # rev_filter,收到布消息过滤条件
+    # pub_efields,显示报文哪些字段
+    # rev_efields,显示报文哪些字段
+    # pkgsize,每个写入数据库的数量
+	def write_records(ex_filter,pub_filter,rev_filter,pub_efields="",rev_efields="",pkgsize=300)
 		src_pkgs=get_pkgfiles()	
 		src_pkgs.each do |pkgpath|			
 			 export_pkgs(pkgpath,ex_filter)		
@@ -257,11 +264,11 @@ if __FILE__==$0
    	    tshark=ZL::Tshark.new(pkgdir,filename) 	
 	 	# tshark.write_records(ex_filter,pub_filter,rev_filter)
 	 	#tshark.write_result
-		thr=tshark.capture(cap_filter,10,1)
-		p thr.alive?
-	        tshark.stop_cap
-		p thr.alive?	
+		tshark.capture(cap_filter,10,1)	
+	    tshark.stop_cap
+	
 # 	 }
   #end
 
 end
+
