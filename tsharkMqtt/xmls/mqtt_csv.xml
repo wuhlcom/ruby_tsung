@@ -30,16 +30,16 @@
 		<!-- 如果要创建subscirber maxnumber 10000个，每秒50个session(arrivalrate="50"每秒50)，
 		需10000/50=200s,但在实际设置时duration要略大于这个时间如220，这样才能保证所有的订阅都能成功，并且sesseion 中sub的等待
 			<mqtt type="waitForMessages" timeout="240"></mqtt>要略大于duration比如设置为240-->
-		<arrivalphase phase="1" duration="40" unit="second"> 
+		<arrivalphase phase="1" duration="440" unit="second"> 
 			<session_setup name="mqtt_subscriber" probability="100" /> 
 			<session_setup name="mqtt_publisher" probability="0" /> 
-			<users maxnumber="1000" arrivalrate="50" unit="second"/> 
+			<users maxnumber="100" arrivalrate="50" unit="second"/> 
 		 </arrivalphase> 
 		 
-		 <arrivalphase phase="2" duration="40" unit="second"> 
+		 <arrivalphase phase="2" duration="440" unit="second"> 
 			<session_setup name="mqtt_subscriber" probability="0"/> 
 			<session_setup name="mqtt_publisher" probability="100" /> 
-			<users maxnumber="1000" arrivalrate="50" unit="second"/> 
+			<users maxnumber="100" arrivalrate="50" unit="second"/> 
 		</arrivalphase> 
     </load>
 
@@ -90,7 +90,7 @@
 			
 			<request>
 				<!-- wait for 60s -->
-				<mqtt type="waitForMessages" timeout="100"></mqtt>
+				<mqtt type="waitForMessages" timeout="50"></mqtt>
 			</request>
 
 			<!-- <request subst="true"> -->

@@ -90,7 +90,7 @@ module ZL
        	   if rs        
     	      @pkgs=expath 
     	   else
-    	      warn("WARNING:filter pkg failed,the pkgpath is #{pkgpath}")  
+    	      warn("ERROR:export packet failed,the pkgpath is '#{pkgpath}'")  
     	   end 	 
         end
         return @pkgs
@@ -218,17 +218,17 @@ module ZL
 	# tshark -r mqtt.pcapng -Tfields -e frame.time -e mqtt.msg -e mqtt.topic -e mqtt.msgtype -Y "mqtt.msgtype==3 && ip.src==192.168.10.8"
 	#针对revpub，解析报文并保存到数据库
 	def revpub_pkg(filter,efields="")	
-		pkg_arr=tshark_rtfields(filter,efields)
-		if !pkg_arr.nil? && !pkg_arr.empty?						
-			pkg_arr.each do|item|
-				tstr1=item[FTIME]
-				t1=Time.parse(tstr1)
-				topic=item[MQTOPIC]
-				update_pub(topic,t1) #update pubs record with the time of  packet recieved 	 						
-	       	end											           
-		else
-			msg="#{filter} No packet captured"
-		end
+	      pkg_arr=tshark_rtfields(filter,efields)
+	      if !pkg_arr.nil? && !pkg_arr.empty?						
+		  pkg_arr.each do|item|
+			tstr1=item[FTIME]
+			t1=Time.parse(tstr1)
+			topic=item[MQTOPIC]
+			update_pub(topic,t1) #update pubs record with the time of  packet recieved 	 						
+	          end											           
+	     else
+	 	  msg="#{filter} No packet captured"
+	     end
 	end
 
     # ex_filter,导出报文过滤条件
@@ -237,19 +237,19 @@ module ZL
     # pub_efields,显示报文哪些字段
     # rev_efields,显示报文哪些字段
     # pkgsize,每个写入数据库的数量
-	def write_records(ex_filter,pub_filter,rev_filter,pub_efields="",rev_efields="",pkgsize=300)
+    def write_records(ex_filter,pub_filter,rev_filter,pub_efields="",rev_efields="",pkgsize=300)
 		src_pkgs=get_pkgfiles()	
 		src_pkgs.each do |pkgpath|			
 			 export_pkgs(pkgpath,ex_filter)		
 			 pub_pkg(pub_filter,pub_efields,pkgsize)		 
 			 revpub_pkg(rev_filter,rev_efields)			 
 		end
-	end
+    end
 
-	def write_result
+    def write_result
 	  delays
 	  result 
-	end
+    end
   
   end #Tshark
 
