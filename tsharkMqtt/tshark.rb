@@ -21,7 +21,8 @@ module ZL
     MSGTYPE="mqtt.msgtype"
     FIELDS="-e frame.time -e #{MQTOPIC} -e #{MQMSG}" 
     EMPTYFLAG=false #调试使用当为true会清空数据库表
-    DEFAULT_PKGSDIR=File.expand_path("packets",File.dirname(__FILE__))
+    #DEFAULT_PKGSDIR=File.expand_path("packets",File.dirname(__FILE__))
+    DEFAULT_PKGSDIR="packets"
 
     def initialize(pkgsdir=DEFAULT_PKGSDIR,filename="tsung_mqtt.pcapng")
        pkgsdir="./#{pkgsdir}/#{Time.now.strftime("%Y%m%d-%H%M%S")}"
