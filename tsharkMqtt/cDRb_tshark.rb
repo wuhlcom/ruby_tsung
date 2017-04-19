@@ -16,11 +16,13 @@ filename="mqtt"
 cap_filter="tcp port 1883"
 ###parse packets filters
 ex_filter="mqtt.msgtype==3 && (ip.src==192.168.10.166||ip.src==192.168.10.8)"
+ex_filter2="mqtt.msgtype==3 && (ip.src==192.168.10.164||ip.src==192.168.10.8)"
 pub_filter="mqtt.msgtype==3 && ip.src==192.168.10.166"
+pub_filter2="mqtt.msgtype==3 && ip.src==192.168.10.164"
 rev_filter="mqtt.msgtype==3 && ip.src==192.168.10.8"
 ###DRb
 DRb.start_service
-tshark=DRbObject.new_with_uri(URI_ADDR)
+r_tshark=DRbObject.new_with_uri(URI_ADDR)
 
 #0 生成tsung配置文件
 
@@ -30,7 +32,7 @@ l_tshark=ZL::Tshark.new()
 #本地客户端抓包
 l_tshark.capture(cap_filter,10,1)	
 #远程客户端抓包
-tshark.capture(cap_filter,filesize,filenum)
+r_tshark.capture(cap_filter,filesize,filenum)
 
 #2 开始tsung
 puts "[#{Time.now}]step 2: tsung starting....."
@@ -40,14 +42,14 @@ flag=tsung.tsung_start
 #3 结束tsung，停止抓包
 puts "[#{Time.now}]step 3: tsung end and tshark stop....."
 if flag==true
-  tshark.linuxpkill(tshark_process)
+  r_tshark.linuxpkill(tshark_process)
   l_tshark.linuxpkill(tshark_process)
 end
 
 #4 解析报文并写入数据库
 puts "[#{Time.now}]step 4: parser packets..."
 l_tshark.write_records(ex_filter,pub_filter,rev_filter)
-#tshark.write_records(ex_filter,pub_filter,rev_filter)
+r_tshark.write_records(ex_filter2,pub_filter2,rev_filter)
 
 #5 写入最终结果 
 puts "[#{Time.now}]step 5: result..."
