@@ -22,7 +22,7 @@ module ZL
     FIELDS="-e frame.time -e #{MQTOPIC} -e #{MQMSG}" 
     EMPTYFLAG=false #调试使用当为true会清空数据库表
 
-    def initialize(pkgsdir="packets",filename="tsung_mqtt")
+    def initialize(pkgsdir="packets",filename="tsung_mqtt.pcapng")
        pkgsdir="./#{pkgsdir}/#{Time.now.strftime("%Y%m%d-%H%M%S")}"
        @pkgsdir=pkgsdir
        @pkgs_expdir="#{@pkgsdir}/expkgs"
@@ -81,7 +81,8 @@ module ZL
     #--pkgpath
     #--filter,过滤条件
     #--flag，是否进行过滤
-    def export_pkgs(pkgpath,filter,flag=true)   	
+    def export_pkgs(pkgpath,filter,flag=true)  
+        chown_pkg 
    	@pkgs=pkgpath     
         if flag
            expath="#{@pkgs_expdir}/#{File.basename(pkgpath)}"            
@@ -266,11 +267,10 @@ if __FILE__==$0
  
 #   Benchmark.bm(7) do |x|
  #  	 x.report("pubs"){ 		
-   	    tshark=ZL::Tshark.new(pkgdir,filename) 	
-	 	# tshark.write_records(ex_filter,pub_filter,rev_filter)
+   	    tshark=ZL::Tshark.new() 	
+	    tshark.write_records(ex_filter,pub_filter,rev_filter)
 	 	#tshark.write_result
-		tshark.capture(cap_filter,10,1)	
-	    tshark.stop_cap
+		#tshark.capture(cap_filter,10,1)	
 	
 # 	 }
   #end

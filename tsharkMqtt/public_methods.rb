@@ -29,9 +29,9 @@ module ZL
 	   `sudo pkill -9 #{cmd}`
        end
 	
- 	def whoami
+       def whoami
 	    rs=`whoami`.delete("\n")
-	end
+       end
 
 	def uid()
 	    `id -u #{whoami}`.delete("\n")
@@ -44,6 +44,10 @@ module ZL
 	def chown(file)
 	   usr=whoami
 	   `sudo chown -R  #{usr}:#{usr} #{file}`
+	end
+
+	def chmod(file)
+	 
 	end
 
    end #PubMethods
