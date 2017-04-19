@@ -1,7 +1,7 @@
 # !/home/zhilu/.rvm/rubies/ruby-2.3.3/bin/ruby
 require_relative 'tshark'
-#ip="192.168.10.164"
-ip=ifip
+ip="192.168.10.164"
+#ip=ifip
 port="65534"
 URI_ADDR="druby://#{ip}:#{port}"
 class SDRbTshark<ZL::Tshark
