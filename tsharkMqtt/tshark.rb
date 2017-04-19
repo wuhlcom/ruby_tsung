@@ -36,6 +36,7 @@ module ZL
    
     #获取所有包文件名
     def get_pkgfiles()
+        chownR_pkg
   	files=[]
   	files=Dir.glob("#{@pkgsdir}/*").select{|file|file =~ /#{@filename}/}	
     end
@@ -240,8 +241,9 @@ module ZL
     # rev_efields,显示报文哪些字段
     # pkgsize,每个写入数据库的数量
     def write_records(ex_filter,pub_filter,rev_filter,pub_efields="",rev_efields="",pkgsize=300)
-		src_pkgs=get_pkgfiles()	
-		src_pkgs.each do |pkgpath|			
+		src_pkgs=get_pkgfiles()
+		src_pkgs.each do |pkgpath|		
+			 p pkgpath	
 			 export_pkgs(pkgpath,ex_filter)		
 			 pub_pkg(pub_filter,pub_efields,pkgsize)		 
 			 revpub_pkg(rev_filter,rev_efields)			 
