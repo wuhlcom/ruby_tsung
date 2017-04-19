@@ -6,11 +6,10 @@ URI_ADDR="druby://#{ip}:#{port}"
 class SDRbTshark<ZL::Tshark
 end
 
-pkgdir="testpkgdir"
+pkgdir="testcap"
 filename="test"
 puts "DRB undumped SERVER #{URI_ADDR} is running..."
-FRONT_OBJECT=SDRbTshark.new(pkgdir,filename)
+FRONT_OBJECT=SDRbTshark.new()
 p FRONT_OBJECT
 DRb.start_service(URI_ADDR, FRONT_OBJECT)
 DRb.thread.join
-~                     
