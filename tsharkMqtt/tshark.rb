@@ -21,8 +21,9 @@ module ZL
     MSGTYPE="mqtt.msgtype"
     FIELDS="-e frame.time -e #{MQTOPIC} -e #{MQMSG}" 
     EMPTYFLAG=false #调试使用当为true会清空数据库表
+    DEFAULT_PKGSDIR="packets"
 
-    def initialize(pkgsdir="packets",filename="tsung_mqtt.pcapng")
+    def initialize(pkgsdir=DEFAULT_PKGSDIR,filename="tsung_mqtt.pcapng")
        pkgsdir="./#{pkgsdir}/#{Time.now.strftime("%Y%m%d-%H%M%S")}"
        @pkgsdir=pkgsdir
        @pkgs_expdir="#{@pkgsdir}/expkgs"
@@ -62,8 +63,8 @@ module ZL
 		return @capthr
      end 
    
-     def chown_pkg
-	 chown(@pkgsdir)
+     def chownR_pkg
+	 chown_R(DEFAULT_PKGSDIR)
      end
  
      def stop_cap
@@ -82,7 +83,7 @@ module ZL
     #--filter,过滤条件
     #--flag，是否进行过滤
     def export_pkgs(pkgpath,filter,flag=true)  
-        chown_pkg 
+        chownR_pkg 
    	@pkgs=pkgpath     
         if flag
            expath="#{@pkgs_expdir}/#{File.basename(pkgpath)}"            
@@ -97,36 +98,38 @@ module ZL
         return @pkgs
    end
    
-    #json格式
-	#tshark -r packet.pcapng -c 50 -Tjson -e frame.time -e ip.src -e ip.dst -e mqtt.topic -e mqtt.msg -E header=y -Y mqtt.msg=="hehe"
-	def tshark_rtjson(filter,efields="")
-		res=[]
-	    fields=set_fields efields
-		rs=`tshark -r "#{@pkgs}" -Tjson #{fields} -Y "#{filter}"`
-		unless rs.nil?	
-		 	res=JSON.parse(rs)	
-		 end
-		return res 
-	end
+  #json格式
+  #tshark -r packet.pcapng -c 50 -Tjson -e frame.time -e ip.src -e ip.dst -e mqtt.topic -e mqtt.msg -E header=y -Y mqtt.msg=="hehe"
+   def tshark_rtjson(filter,efields="")
+        chownR_pkg 
+	res=[]
+        fields=set_fields efields
+	rs=`tshark -r "#{@pkgs}" -Tjson #{fields} -Y "#{filter}"`
+	unless rs.nil?	
+	 	res=JSON.parse(rs)	
+        end
+	return res 
+   end
 
-    #eK参数解析结果也为json格式
-	#tshark -r packet.pcapng -c 50 -TeK -e frame.time -e ip.src -e ip.dst -e mqtt.topic -e mqtt.msg -E header=y -Y mqtt.msg=="hehe"
-	def tshark_rtek(filter,efields="")
-		res=[]
-	        fields=set_fields efields
-		rs=`tshark -r "#{@pkgspath}" -TeK #{fields} -Y "#{filter}"`
-		unless rs.nil?	
-		 	res=JSON.parse(rs)	
-		 end
-		return res 
-	end
+   #eK参数解析结果也为json格式
+   #tshark -r packet.pcapng -c 50 -TeK -e frame.time -e ip.src -e ip.dst -e mqtt.topic -e mqtt.msg -E header=y -Y mqtt.msg=="hehe"
+   def tshark_rtek(filter,efields="")
+        chownR_pkg 
+ 	res=[]
+        fields=set_fields efields
+	rs=`tshark -r "#{@pkgspath}" -TeK #{fields} -Y "#{filter}"`
+	unless rs.nil?	
+	 	res=JSON.parse(rs)	
+	 end
+	return res 
+  end
 
-	#tshark -r packet.pcapng -c 50 -Tfields -e frame.time -e ip.src -e ip.dst -e mqtt.topic -e mqtt.msg -E header=y -Y mqtt.msg=="hehe"
-	def tshark_rtfields(filter,efields="")	 
-	    chown_pkg	
-	    fields=set_fields efields
-	    #分割fields作为key
-	    keys=fields.split(/\s*-e\s*/)
+   #tshark -r packet.pcapng -c 50 -Tfields -e frame.time -e ip.src -e ip.dst -e mqtt.topic -e mqtt.msg -E header=y -Y mqtt.msg=="hehe"
+   def tshark_rtfields(filter,efields="")	 
+	   chownR_pkg	
+	   fields=set_fields efields
+	   #分割fields作为key
+	   keys=fields.split(/\s*-e\s*/)
 		keys.delete("")	
 		rarr=[]	
 		rs=`tshark -r #{@pkgs} -Tfields #{fields} -Y "#{filter}"` #注意filer外要加双引号
@@ -140,9 +143,9 @@ module ZL
 			end
 		end
 		return rarr
-	end
+  end
 
-	def json_delay(filter,efields="")
+  def json_delay(filter,efields="")
 		times={}
 		value=0
 		rs=tshark_rtjson(@pkgspath,filter,efields)
@@ -165,56 +168,54 @@ module ZL
 		else
 			msg="#{filter} No packet captured"
 		end		
-	end
+  end
 
-	#针对一发一收
-	def fields_delay(filter,efields="")
-		value=0
-		times={}
-		rs=tshark_rtfields(filter,efields)
-		if !rs.nil? && !rs.empty?
-			if rs.size==2
-				tstr1=rs[0][FTIME]
-				t1=Time.parse(tstr1)
+   #针对一发一收
+   def fields_delay(filter,efields="")
+	value=0
+	times={}
+	rs=tshark_rtfields(filter,efields)
+	if !rs.nil? && !rs.empty?
+		if rs.size==2
+			tstr1=rs[0][FTIME]
+			t1=Time.parse(tstr1)
+			tstr2=rs[1][FTIME]
+			t2=Time.parse(tstr2)	
 
-				tstr2=rs[1][FTIME]
-				t2=Time.parse(tstr2)	
-
-				value=(t2-t1).roundn(-3)				
-				times={pub_time: t1,delay_time: value}
-			else		
+			value=(t2-t1).roundn(-3)				
+         		times={pub_time: t1,delay_time: value}
+		else		
 	          value=rs[0]	   
 	          msg="Error: #{filter} Only one message captured,value is #{value}"  
-			end
-		else
-			msg="#{filter} No packet captured"
 		end
+	else
+		msg="#{filter} No packet captured"
 	end
+   end
 
     # tshark -r mqtt.pcapng -Tfields -e frame.time -e ip.src -e ip.dst -e mqtt.msg -e mqtt.topic -Y "mqtt.msgtype==3 && ip.src==192.168.10.166"
     #针对pub，解析报文并保存到数据库
     #pkgsize，一次写入数据库条目数，修改此值能略微提高速率
-	def pub_pkg(filter,efields="",pkgsize)
-		self.empty_pub if EMPTYFLAG
-		fail("pkgsize must not more than 500") if pkgsize>500
-	    pkgs=[]	
-		pkg_arr=tshark_rtfields(filter,efields)	
-		if !pkg_arr.nil? && !pkg_arr.empty?					
-				pkg_arr.each do|item|				
-					tstr1=item[FTIME]
-					t1=Time.parse(tstr1)
-					pkgs_hash={pub_time: t1,msg: item[MQMSG],topic: item[MQTOPIC]}
-					pkgs<<pkgs_hash
-					if pkgs.size==pkgsize #当保存的数量达到rsize个写入数据库
-		       			self.add_pub(pkgs)
-		       			pkgs=[] #清空
-	       			end
-	       		end	
-	       	self.add_pub(pkgs) unless pkgs.empty?	       										           
-		else
-			msg="#{filter} No packet captured"
-		end		
-	end
+    def pub_pkg(filter,efields="",pkgsize)
+	self.empty_pub if EMPTYFLAG
+	fail("pkgsize must not more than 500") if pkgsize>500
+        pkgs=[]	
+	pkg_arr=tshark_rtfields(filter,efields)	
+	if !pkg_arr.nil? && !pkg_arr.empty?					
+    	    pkg_arr.each do|item|				
+	     tstr1=item[FTIME]
+	     t1=Time.parse(tstr1)
+	     pkgs_hash={pub_time: t1,msg: item[MQMSG],topic: item[MQTOPIC]}
+	     pkgs<<pkgs_hash
+	     if pkgs.size==pkgsize #当保存的数量达到rsize个写入数据库
+	          self.add_pub(pkgs)
+		  pkgs=[] #清空
+	     end
+	   end	
+	   self.add_pub(pkgs) unless pkgs.empty?	       										                  else
+		msg="#{filter} No packet captured"
+	end		
+    end
 
 	# tshark -r mqtt.pcapng -Tfields -e frame.time -e mqtt.msg -e mqtt.topic -e mqtt.msgtype -Y "mqtt.msgtype==3 && ip.src==192.168.10.8"
 	#针对revpub，解析报文并保存到数据库

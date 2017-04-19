@@ -1,25 +1,25 @@
 require 'fileutils'
 require 'pp'
 module ZL
-	module PubMethods
+      module PubMethods
 
-	def mk_dir(dir)
+      def mk_dir(dir)
 		unless File.exists?(dir)
 	    	   FileUtils.mkdir_p(dir)  
 	    	end
-	end
+      end
 
-	def ifip(intf="eth0")
+      def ifip(intf="eth0")
 	    rs=`ifconfig #{intf}`
 	    #inet addr:192.168.10.166  Bcast:192.168.10.255  Mask:255.255.255.0
 	    rs.slice(/inet\s+addr:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+Bcast:/,1)
-	end
+     end
 
-	def psef(cmd="tshark")
+       def psef(cmd="tshark")
           #print `ps -ef|grep #{cmd}|grep -v grep`
           pidstr=`ps -ef|grep #{cmd}|grep -vE 'grep|vim|ruby'|awk -F " " '{print $2}'`
 	  pids=pidstr.split("\n")
-	end
+       end
 	
        def linuxkill(pid)
 	   `sudo kill -9  #{pid}`
@@ -41,7 +41,7 @@ module ZL
 	   `id -g #{whoami}`.delete("\n")
 	end
 	
-	def chown(file)
+	def chown_R(file)
 	   usr=whoami
 	   `sudo chown -R  #{usr}:#{usr} #{file}`
 	end
@@ -62,4 +62,5 @@ if __FILE__==$0
    # p psef(cmd)
   p uid
   p gid
+  chown_R("./packets")  
 end
