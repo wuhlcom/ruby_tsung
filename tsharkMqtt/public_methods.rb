@@ -28,14 +28,34 @@ module ZL
        def linuxpkill(cmd="tshark")
 	   `sudo pkill -9 #{cmd}`
        end
+	
+ 	def whoami
+	    rs=`whoami`.delete("\n")
+	end
+
+	def uid()
+	    `id -u #{whoami}`.delete("\n")
+	end
+ 	
+	def gid()
+	   `id -g #{whoami}`.delete("\n")
+	end
+	
+	def chown(file)
+	   usr=whoami
+	   `sudo chown -R  #{usr}:#{usr} #{file}`
+	end
+
    end #PubMethods
 end #ZL
 
 if __FILE__==$0
     include ZL::PubMethods
     #ifip
-    cmd="tshark"
-    p psef(cmd)
-    linuxpkill
-    p psef(cmd)
+   # cmd="tshark"
+   # p psef(cmd)
+   # linuxpkill
+   # p psef(cmd)
+  p uid
+  p gid
 end

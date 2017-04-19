@@ -51,17 +51,21 @@ module ZL
      #tshark -i eth0 -f "tcp port 1883" -w mqtt.pcapng -a filesize:1000000 -a files:10
      def capture(filter,filesize=200000,fileNumber=10,intf="eth0")
         begin
-			@capthr=Thread.new do
-	       		   rs=`sudo tshark -i #{intf} -f "#{filter}" -w #{@pkgspath} -a filesize:#{filesize} -a files:#{fileNumber}`
-			end
+		@capthr=Thread.new do
+	             rs=`sudo tshark -i #{intf} -f "#{filter}" -w #{@pkgspath} -a filesize:#{filesize} -a files:#{fileNumber}`
+	        end
         	sleep 5
 	        #@capthr.abort_on_exception=true
 		rescue =>ex
-	       puts ex.message.to_s
+	           puts ex.message.to_s
 		end
 		return @capthr
      end 
-    
+   
+     def chown_pkg
+	 chown(@pkgsdir)
+     end
+ 
      def stop_cap
          if !@capthr.nil? && @capthr.alive?
 	        @capthr.exit 
@@ -77,8 +81,8 @@ module ZL
     #--pkgpath
     #--filter,过滤条件
     #--flag，是否进行过滤
-   	def export_pkgs(pkgpath,filter,flag=true)   	
-   		@pkgs=pkgpath     
+    def export_pkgs(pkgpath,filter,flag=true)   	
+   	@pkgs=pkgpath     
         if flag
            expath="#{@pkgs_expdir}/#{File.basename(pkgpath)}"            
            cmd="tshark -r \"#{pkgpath}\" -Y \"#{filter}\" -w \"#{expath}\""
@@ -90,7 +94,7 @@ module ZL
     	   end 	 
         end
         return @pkgs
-   	end
+   end
    
     #json格式
 	#tshark -r packet.pcapng -c 50 -Tjson -e frame.time -e ip.src -e ip.dst -e mqtt.topic -e mqtt.msg -E header=y -Y mqtt.msg=="hehe"
@@ -108,7 +112,7 @@ module ZL
 	#tshark -r packet.pcapng -c 50 -TeK -e frame.time -e ip.src -e ip.dst -e mqtt.topic -e mqtt.msg -E header=y -Y mqtt.msg=="hehe"
 	def tshark_rtek(filter,efields="")
 		res=[]
-	    fields=set_fields efields
+	        fields=set_fields efields
 		rs=`tshark -r "#{@pkgspath}" -TeK #{fields} -Y "#{filter}"`
 		unless rs.nil?	
 		 	res=JSON.parse(rs)	
@@ -117,7 +121,8 @@ module ZL
 	end
 
 	#tshark -r packet.pcapng -c 50 -Tfields -e frame.time -e ip.src -e ip.dst -e mqtt.topic -e mqtt.msg -E header=y -Y mqtt.msg=="hehe"
-	def tshark_rtfields(filter,efields="")	 	
+	def tshark_rtfields(filter,efields="")	 
+	    chown_pkg	
 	    fields=set_fields efields
 	    #分割fields作为key
 	    keys=fields.split(/\s*-e\s*/)
@@ -141,21 +146,21 @@ module ZL
 		value=0
 		rs=tshark_rtjson(@pkgspath,filter,efields)
 		
-		if !rs.nil? && !rs.empty?
-			if rs.size==2		
-			 
+        	if !rs.nil? && !rs.empty?
+	        	if rs.size==2		
+	 		 
 			 tstr1=rs[0]["_source"]["layers"]["frame.time"][0]		
 			 t1=Time.parse(tstr1)
 			 
 			 tstr2=rs[1]["_source"]["layers"]["frame.time"][0]
 			 t2=Time.parse(tstr2)
 			 
-			value=(t2-t1).roundn(-3)				
-			times={pub_time: t1,delay_time: value}
+			 value=(t2-t1).roundn(-3)				
+			 times={pub_time: t1,delay_time: value}
 			else       
-	          value=rs[0]["_source"]["layers"]
-	          msg="Error: #{filter} Only one message captured,value is #{value}"  
-		    end
+	                   value=rs[0]["_source"]["layers"]
+	                   msg="Error: #{filter} Only one message captured,value is #{value}"  
+		        end
 		else
 			msg="#{filter} No packet captured"
 		end		
