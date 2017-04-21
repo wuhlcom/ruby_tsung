@@ -24,7 +24,8 @@ module ZL
     #DEFAULT_PKGSDIR=File.expand_path("packets",File.dirname(__FILE__))
     DEFAULT_PKGSDIR="packets"
 
-    def initialize(pkgsdir=DEFAULT_PKGSDIR,filename="tsung_mqtt.pcapng")
+    def initialize(intf="eth0",pkgsdir=DEFAULT_PKGSDIR,filename="tsung_mqtt.pcapng")
+       @intf=intf
        pkgsdir="./#{pkgsdir}/#{Time.now.strftime("%Y%m%d-%H%M%S")}"
        @pkgsdir=pkgsdir
        @pkgs_expdir="#{@pkgsdir}/expkgs"
@@ -52,10 +53,10 @@ module ZL
 
      #tshark -i eth0 -f "tcp port 1883" -Tfields -e ip.src -e ip.dst -e mqtt.msg -e mqtt.topic -E header=y -w mqtt.pcapng -a duration:200 
      #tshark -i eth0 -f "tcp port 1883" -w mqtt.pcapng -a filesize:1000000 -a files:10
-     def capture(filter,filesize=200000,fileNumber=10,intf="eth0")
+     def capture(filter,filesize=200000,fileNumber=10)
         begin
 		@capthr=Thread.new do
-	             rs=`sudo tshark -i #{intf} -f "#{filter}" -w #{@pkgspath} -a filesize:#{filesize} -a files:#{fileNumber}`
+	             rs=`sudo tshark -i #{@intf} -f "#{filter}" -w #{@pkgspath} -a filesize:#{filesize} -a files:#{fileNumber}`
 	        end
         	sleep 5
 	        #@capthr.abort_on_exception=true

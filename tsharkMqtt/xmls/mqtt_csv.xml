@@ -6,9 +6,9 @@
    	     	<ip value="192.168.10.166"></ip>	
    	     </client>
    	     			
-   	    <client host="zhilu-ubuntu02" weight="1" maxusers="6000">
-   	     	<ip value="192.168.10.164"></ip>
-   	    </client>
+   	<!-- <client host="ubuntu386" weight="1" maxusers="6000">
+   	     	<ip value="192.168.10.20"></ip>
+   	    </client>-->
    	 </clients>
 	<servers>
           <server host="192.168.10.200" port="1883" type="tcp" />
@@ -33,13 +33,13 @@
 		<arrivalphase phase="1" duration="440" unit="second"> 
 			<session_setup name="mqtt_subscriber" probability="100" /> 
 			<session_setup name="mqtt_publisher" probability="0" /> 
-			<users maxnumber="100" arrivalrate="50" unit="second"/> 
+			<users maxnumber="1000" arrivalrate="50" unit="second"/> 
 		 </arrivalphase> 
 		 
 		 <arrivalphase phase="2" duration="440" unit="second"> 
 			<session_setup name="mqtt_subscriber" probability="0"/> 
 			<session_setup name="mqtt_publisher" probability="100" /> 
-			<users maxnumber="100" arrivalrate="50" unit="second"/> 
+			<users maxnumber="1000" arrivalrate="50" unit="second"/> 
 		</arrivalphase> 
     </load>
 
@@ -90,7 +90,7 @@
 			
 			<request>
 				<!-- wait for 60s -->
-				<mqtt type="waitForMessages" timeout="50"></mqtt>
+				<mqtt type="waitForMessages" timeout="60"></mqtt>
 			</request>
 
 			<!-- <request subst="true"> -->

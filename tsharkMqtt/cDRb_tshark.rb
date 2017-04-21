@@ -2,17 +2,21 @@ require_relative 'tshark'
 require_relative 'tsung.rb'
 require 'benchmark'
 ##
+packetsdir="packets"
+packetname="tsung_mqtt.pcapng"
+intf="eth0"
+
 tshark_process="tshark"
 ###xmlpath
 xmlpath="./xmls/mqtt_csv.xml"
 ####ruby server ip and port
-drbsrv_ip="192.168.10.164"
+drbsrv_ip="192.168.10.20"
 mqttsrv_ip="192.168.10.200"
 port="65534"
 URI_ADDR="druby://#{drbsrv_ip}:#{port}"
 ###capture parameters
-filesize=2000
-filenum=2
+filesize=100
+filenum=1
 filename="mqtt" 
 cap_filter="tcp port 1883"
 ###parse packets filters

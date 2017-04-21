@@ -3,3 +3,7 @@
 3 tsung.rb 执行tsung命令     
 4 xml解析--未实现
 5 WEB显示数据库结果,ruby生成html报告？
+6 多台机器之间要实现ssh免密连接
+7 多台机器要hosts中配置ip地址与主机名映射
+8 使用mysql做数据库，要安装和配置好mysql
+
