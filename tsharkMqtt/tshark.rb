@@ -28,6 +28,7 @@ module ZL
        @intf=intf
        pkgsdir="./#{pkgsdir}/#{Time.now.strftime("%Y%m%d-%H%M%S")}"
        @pkgsdir=pkgsdir
+       mk_dir(@pkgsdir)
        @pkgs_expdir="#{@pkgsdir}/expkgs"
        mk_dir(@pkgs_expdir)
        @filename=filename

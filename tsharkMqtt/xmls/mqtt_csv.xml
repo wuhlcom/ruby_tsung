@@ -3,15 +3,15 @@
 <tsung loglevel="notice" version="1.0">
    	 <clients>
    	     <client host="zhilu-ubuntu01" weight="1" maxusers="10000">
-   	     	<ip value="192.168.10.166"></ip>	
+   	     	<ip value="192.168.10.94"></ip>	
    	     </client>
    	     			
-   	<!-- <client host="ubuntu386" weight="1" maxusers="6000">
+   	<client host="ubuntu386" weight="1" maxusers="6000">
    	     	<ip value="192.168.10.20"></ip>
-   	    </client>-->
+ 	</client>
    	 </clients>
 	<servers>
-          <server host="192.168.10.200" port="1883" type="tcp" />
+          <server host="192.168.10.8" port="1883" type="tcp" />
 	</servers>
 
     <load>

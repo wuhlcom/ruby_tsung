@@ -1,7 +1,7 @@
 defaults: &defaults 
-  host:     192.168.10.166
+  host:     192.168.10.20
   username: root
-  password: 
+  password: zhilu
   pool: 5
   timeout: 5000
 

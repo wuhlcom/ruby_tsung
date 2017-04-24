@@ -11,6 +11,8 @@ tshark_process="tshark"
 xmlpath="./xmls/mqtt_csv.xml"
 ####ruby server ip and port
 drbsrv_ip="192.168.10.20"
+clientIP1="192.168.10.20"
+clientIP2="192.168.10.94"
 mqttsrv_ip="192.168.10.200"
 port="65534"
 URI_ADDR="druby://#{drbsrv_ip}:#{port}"
@@ -20,10 +22,10 @@ filenum=1
 filename="mqtt" 
 cap_filter="tcp port 1883"
 ###parse packets filters
-ex_filter="mqtt.msgtype==3 && (ip.src==#{mqttsrv_ip}||ip.src==192.168.10.166)"
-ex_filter2="mqtt.msgtype==3 && (ip.src==#{mqttsrv_ip}||ip.src==192.168.10.164)"
-pub_filter="mqtt.msgtype==3 && ip.src==192.168.10.166"
-pub_filter2="mqtt.msgtype==3 && ip.src==192.168.10.164"
+ex_filter="mqtt.msgtype==3 && (ip.src==#{mqttsrv_ip}||ip.src==#{clientIP1})"
+ex_filter2="mqtt.msgtype==3 && (ip.src==#{mqttsrv_ip}||ip.src==#{clientIP2})"
+pub_filter="mqtt.msgtype==3 && ip.src==#{clientIP1}"
+pub_filter2="mqtt.msgtype==3 && ip.src==#{clientIP2}"
 rev_filter="mqtt.msgtype==3 && ip.src==#{mqttsrv_ip}"
 ###DRb
 DRb.start_service

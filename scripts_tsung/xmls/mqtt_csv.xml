@@ -2,8 +2,8 @@
 <!DOCTYPE tsung SYSTEM "/usr/share/tsung/tsung-1.0.dtd">
 <tsung loglevel="notice" version="1.0">
    	 <clients>
-   	     <client host="zhilu-ubuntu01" weight="1" maxusers="10000">
-   	     	<ip value="192.168.10.166"></ip>	
+   	     <client host="centos71" weight="1" maxusers="10000">
+   	     	<ip value="192.168.10.20"></ip>	
    	     </client>
    	     			
    	    <!--<client host="zhilu-ubuntu02" weight="1" maxusers="6000">
@@ -33,13 +33,13 @@
 		<arrivalphase phase="1" duration="420" unit="second"> 
 			<session_setup name="mqtt_subscriber" probability="100" /> 
 			<session_setup name="mqtt_publisher" probability="0" /> 
-			<users maxnumber="10000" arrivalrate="50" unit="second"/> 
+			<users maxnumber="1000" arrivalrate="50" unit="second"/> 
 		 </arrivalphase> 
 		 
 		 <arrivalphase phase="2" duration="420" unit="second"> 
 			<session_setup name="mqtt_subscriber" probability="0"/> 
 			<session_setup name="mqtt_publisher" probability="100" /> 
-			<users maxnumber="10000" arrivalrate="50" unit="second"/> 
+			<users maxnumber="1000" arrivalrate="50" unit="second"/> 
 		</arrivalphase> 
     </load>
 
