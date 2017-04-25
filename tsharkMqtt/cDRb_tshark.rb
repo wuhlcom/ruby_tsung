@@ -10,15 +10,15 @@ tshark_process="tshark"
 ###xmlpath
 xmlpath="./xmls/mqtt_csv.xml"
 ####ruby server ip and port
-drbsrv_ip="192.168.10.20"
-clientIP1="192.168.10.20"
-clientIP2="192.168.10.94"
-mqttsrv_ip="192.168.10.200"
+drbsrv_ip="192.168.10.30"
+clientIP1="192.168.10.30"
+clientIP2="192.168.10.31"
+mqttsrv_ip="192.168.10.8"
 port="65534"
 URI_ADDR="druby://#{drbsrv_ip}:#{port}"
 ###capture parameters
 filesize=100
-filenum=1
+filenum=2
 filename="mqtt" 
 cap_filter="tcp port 1883"
 ###parse packets filters

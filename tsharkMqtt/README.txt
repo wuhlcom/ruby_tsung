@@ -6,4 +6,9 @@
 6 多台机器之间要实现ssh免密连接
 7 多台机器要hosts中配置ip地址与主机名映射
 8 使用mysql做数据库，要安装和配置好mysql
+9 要安装gnuplot，以便生成日志时生成图像
+10 要安装2.0以下的tshark，默认的是1.10.*,所以要升级，升级是通过安装Wireshark来实现
+11 安装mqtt定制版本的tsung,安装tsung前要安装erlang
+12 使用perl CPAN 安装Template-tookie
+
 

@@ -1,5 +1,5 @@
 require_relative 'tshark'
-ip="192.168.10.20"
+ip="192.168.10.30"
 #ip=ifip
 port="65534"
 URI_ADDR="druby://#{ip}:#{port}"

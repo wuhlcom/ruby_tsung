@@ -2,12 +2,12 @@
 <!DOCTYPE tsung SYSTEM "/usr/share/tsung/tsung-1.0.dtd">
 <tsung loglevel="notice" version="1.0">
    	 <clients>
-   	     <client host="zhilu-ubuntu01" weight="1" maxusers="10000">
-   	     	<ip value="192.168.10.94"></ip>	
+   	     <client host="ubuntu14041" weight="1" maxusers="10000">
+   	     	<ip value="192.168.10.30"></ip>	
    	     </client>
    	     			
-   	<client host="ubuntu386" weight="1" maxusers="6000">
-   	     	<ip value="192.168.10.20"></ip>
+   	<client host="ubuntu14042" weight="1" maxusers="10000">
+   	     	<ip value="192.168.10.31"></ip>
  	</client>
    	 </clients>
 	<servers>
@@ -30,13 +30,13 @@
 		<!-- 如果要创建subscirber maxnumber 10000个，每秒50个session(arrivalrate="50"每秒50)，
 		需10000/50=200s,但在实际设置时duration要略大于这个时间如220，这样才能保证所有的订阅都能成功，并且sesseion 中sub的等待
 			<mqtt type="waitForMessages" timeout="240"></mqtt>要略大于duration比如设置为240-->
-		<arrivalphase phase="1" duration="440" unit="second"> 
+		<arrivalphase phase="1" duration="30" unit="second"> 
 			<session_setup name="mqtt_subscriber" probability="100" /> 
 			<session_setup name="mqtt_publisher" probability="0" /> 
 			<users maxnumber="1000" arrivalrate="50" unit="second"/> 
 		 </arrivalphase> 
 		 
-		 <arrivalphase phase="2" duration="440" unit="second"> 
+		 <arrivalphase phase="2" duration="30" unit="second"> 
 			<session_setup name="mqtt_subscriber" probability="0"/> 
 			<session_setup name="mqtt_publisher" probability="100" /> 
 			<users maxnumber="1000" arrivalrate="50" unit="second"/> 
