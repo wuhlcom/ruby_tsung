@@ -46,8 +46,8 @@ module ZL
 	   `sudo chown -R  #{usr}:#{usr} #{file}`
 	end
 
-	def chmod(file)
-	 
+	def chmod_R(mode,file)
+           `sudo chmod -R #{mode} #{file}` 	 
 	end
 
    end #PubMethods

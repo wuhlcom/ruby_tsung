@@ -31,10 +31,15 @@ module ZL
        mk_dir(@pkgsdir)
        @pkgs_expdir="#{@pkgsdir}/expkgs"
        mk_dir(@pkgs_expdir)
+       chmod_R("777",DEFAULT_PKGSDIR) 
        @filename=filename
        @pkgspath="#{@pkgsdir}/#{@filename}"
        @pkgs=nil
        @capthr=nil
+    end
+     
+    def chownR_pkg
+        chown_R(DEFAULT_PKGSDIR)
     end
    
     #获取所有包文件名
@@ -67,10 +72,6 @@ module ZL
 		return @capthr
      end 
    
-     def chownR_pkg
-	 chown_R(DEFAULT_PKGSDIR)
-     end
- 
      def stop_cap
          if !@capthr.nil? && @capthr.alive?
 	        @capthr.exit 
@@ -78,6 +79,7 @@ module ZL
          end
 	 return @capthr
     end
+
     #过滤出要解析的所有报文并保存
     #tshark -r mqtt.pcapng -Y "mqtt.msgtype==3 && (ip.src==192.168.10.166||ip.src==192.168.10.8)" -w tsung.pcapng 
     #为了提高解析效率这里对报文进行一次显示过滤并保存
@@ -102,8 +104,8 @@ module ZL
         return @pkgs
    end
    
-  #json格式
-  #tshark -r packet.pcapng -c 50 -Tjson -e frame.time -e ip.src -e ip.dst -e mqtt.topic -e mqtt.msg -E header=y -Y mqtt.msg=="hehe"
+   #json格式
+   #tshark -r packet.pcapng -c 50 -Tjson -e frame.time -e ip.src -e ip.dst -e mqtt.topic -e mqtt.msg -E header=y -Y mqtt.msg=="hehe"
    def tshark_rtjson(filter,efields="")
         chownR_pkg 
 	res=[]
@@ -221,9 +223,9 @@ module ZL
 	end		
     end
 
-	# tshark -r mqtt.pcapng -Tfields -e frame.time -e mqtt.msg -e mqtt.topic -e mqtt.msgtype -Y "mqtt.msgtype==3 && ip.src==192.168.10.8"
-	#针对revpub，解析报文并保存到数据库
-	def revpub_pkg(filter,efields="")	
+    # tshark -r mqtt.pcapng -Tfields -e frame.time -e mqtt.msg -e mqtt.topic -e mqtt.msgtype -Y "mqtt.msgtype==3 && ip.src==192.168.10.8"
+    #针对revpub，解析报文并保存到数据库
+    def revpub_pkg(filter,efields="")	
 	      pkg_arr=tshark_rtfields(filter,efields)
 	      if !pkg_arr.nil? && !pkg_arr.empty?						
 		  pkg_arr.each do|item|
@@ -235,7 +237,7 @@ module ZL
 	     else
 	 	  msg="#{filter} No packet captured"
 	     end
-	end
+    end
 
     # ex_filter,导出报文过滤条件
     # pub_filter,发布消息过滤条件
@@ -246,7 +248,6 @@ module ZL
     def write_records(ex_filter,pub_filter,rev_filter,pub_efields="",rev_efields="",pkgsize=300)
 		src_pkgs=get_pkgfiles()
 		src_pkgs.each do |pkgpath|		
-			 p pkgpath	
 			 export_pkgs(pkgpath,ex_filter)		
 			 pub_pkg(pub_filter,pub_efields,pkgsize)		 
 			 revpub_pkg(rev_filter,rev_efields)			 
@@ -267,18 +268,19 @@ if __FILE__==$0
    pkgdir="captures"
    filename="tt" 
    cap_filter="tcp"
+   intf="eth1"
    ex_filter="mqtt.msgtype==3 && (ip.src==192.168.10.166||ip.src==192.168.10.8)"
    pub_filter="mqtt.msgtype==3 && ip.src==192.168.10.166"
    rev_filter="mqtt.msgtype==3 && ip.src==192.168.10.8"
  
-#   Benchmark.bm(7) do |x|
- #  	 x.report("pubs"){ 		
-   	    tshark=ZL::Tshark.new() 	
-	    tshark.write_records(ex_filter,pub_filter,rev_filter)
+  #   Benchmark.bm(7) do |x|
+  #  	 x.report("pubs"){ 		
+   	    tshark=ZL::Tshark.new(intf) 	
+	    #tshark.write_records(ex_filter,pub_filter,rev_filter)
  	    #tshark.write_result
-	   #tshark.capture(cap_filter,10,1)	
+	    tshark.capture(cap_filter,10,1)	
 	
-# 	 }
+  #	 }
   #end
 
 end

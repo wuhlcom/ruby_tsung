@@ -4,7 +4,7 @@ require 'benchmark'
 ##
 packetsdir="packets"
 packetname="tsung_mqtt.pcapng"
-intf="eth0"
+intf="eth1"
 
 tshark_process="tshark"
 ###xmlpath
@@ -35,7 +35,7 @@ r_tshark=DRbObject.new_with_uri(URI_ADDR)
 
 #1 开始抓包
 puts "[#{Time.now}]step 1: capture beginning....."
-l_tshark=ZL::Tshark.new() 	
+l_tshark=ZL::Tshark.new(intf) 	
 #本地客户端抓包
 l_tshark.capture(cap_filter,filesize,filenum)	
 #远程客户端抓包
