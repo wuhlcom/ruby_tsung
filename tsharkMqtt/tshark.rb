@@ -47,9 +47,7 @@ module ZL
     #获取所有包文件名
     def get_pkgfiles()
         chownR_pkg
-p	pkg_basename=File.basename(@filename,".*")
-p       @pkgsdir
-p       Dir.glob("#{@pkgsdir}/*")
+	pkg_basename=File.basename(@filename,".*")
   	files=[]
   	files=Dir.glob("#{@pkgsdir}/*").select{|file|file =~ /#{pkg_basename}/}	
     end
@@ -214,7 +212,7 @@ p       Dir.glob("#{@pkgsdir}/*")
 	pkg_arr=tshark_rtfields(filter,efields)	
 	if !pkg_arr.nil? && !pkg_arr.empty?					
     	    pkg_arr.each do|item|				
-	      p pkgs_hash={pub_time: item[FTIME],pub_epoch: item[TIME_EPOCH].to_f,msg: item[MQMSG],topic: item[MQTOPIC]}
+	       pkgs_hash={pub_time: item[FTIME],pub_epoch: item[TIME_EPOCH].to_f,msg: item[MQMSG],topic: item[MQTOPIC],ip:@intf}
 	       pkgs<<pkgs_hash
 	       if pkgs.size==pkgsize #当保存的数量达到rsize个写入数据库
 	          self.add_pub(pkgs)
@@ -249,17 +247,16 @@ p       Dir.glob("#{@pkgsdir}/*")
     # rev_efields,显示报文哪些字段
     # pkgsize,每个写入数据库的数量
     def write_records(ex_filter,pub_filter,rev_filter,pub_efields="",rev_efields="",pkgsize=300)
-p		src_pkgs=get_pkgfiles()
+      	    pp  src_pkgs=get_pkgfiles()
 		src_pkgs.each do |pkgpath|
-			p pkgpath		
-			 export_pkgs(pkgpath,ex_filter)		
-			 pub_pkg(pub_filter,pub_efields,pkgsize)		 
-			 revpub_pkg(rev_filter,rev_efields)			 
+			export_pkgs(pkgpath,ex_filter)		
+			pub_pkg(pub_filter,pub_efields,pkgsize)		 
+			revpub_pkg(rev_filter,rev_efields)			 
 		end
     end
 
     def write_result
-	  delays
+	  calculate_delay_epoch
 	  result 
     end
   

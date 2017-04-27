@@ -1,13 +1,14 @@
 require_relative 'tshark'
-ip="192.168.10.30"
-#ip=ifip
+require_relative 'public_methods'
+include ZL::PubMethods
+intf="eth1"
 port="65534"
+ip=ifip(intf)
 URI_ADDR="druby://#{ip}:#{port}"
 class SDRbTshark<ZL::Tshark
 end
 packetsdir="packets"
 packetname="tsung_mqtt.pcapng"
-intf="eth1"
 puts "DRB undumped SERVER #{URI_ADDR} is running..."
 FRONT_OBJECT=SDRbTshark.new(intf)
 p FRONT_OBJECT

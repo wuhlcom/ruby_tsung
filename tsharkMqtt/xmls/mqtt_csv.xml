@@ -2,9 +2,9 @@
 <!DOCTYPE tsung SYSTEM "/usr/share/tsung/tsung-1.0.dtd">
 <tsung loglevel="notice" version="1.0">
    	 <clients>
-   	    <!-- #<client host="ubuntu14041" weight="1" maxusers="10000">
+   	    <client host="ubuntu14041" weight="1" maxusers="10000">
    	     	<ip value="192.168.10.30"></ip>	
-   	     </client>-->
+   	     </client>
    	     			
        	     <client host="ubuntu14042" weight="1" maxusers="10000">
    	     	<ip value="192.168.10.31"></ip>

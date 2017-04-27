@@ -33,7 +33,7 @@ module ZL
       end
     end 
    
-    unless @@adapter.data_source_exists?(:pubs)
+    unless !@@adapter.data_source_exists?(:pubs)
       puts "creating table pubs....."
       @@adapter.create_table :pubs, force: true do |t|       
          t.string :pub_time
@@ -42,7 +42,8 @@ module ZL
          t.decimal:revpub_epoch,:precision=>18,:scale=>7
          t.decimal :delay_time,:precision=>18,:scale=>7
          t.text :msg
-         t.text :topic 
+         t.text :topic
+	 t.string :ip 
          t.timestamps
       end 
     end
