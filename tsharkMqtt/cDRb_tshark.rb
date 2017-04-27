@@ -11,21 +11,24 @@ tshark_process="tshark"
 xmlpath="./xmls/mqtt_csv.xml"
 ####ruby server ip and port
 drbsrv_ip="192.168.10.30"
-clientIP1="192.168.10.30"
-clientIP2="192.168.10.31"
+remote_clientIP="192.168.10.30"
+
+l_tshark=ZL::Tshark.new(intf) 
+	
+localIP=l_tshark.ifip(intf)
 mqttsrv_ip="192.168.10.8"
 port="65534"
 URI_ADDR="druby://#{drbsrv_ip}:#{port}"
 ###capture parameters
-filesize=100
+filesize=1000
 filenum=2
 filename="mqtt" 
 cap_filter="tcp port 1883"
 ###parse packets filters
-ex_filter="mqtt.msgtype==3 && (ip.src==#{mqttsrv_ip}||ip.src==#{clientIP1})"
-ex_filter2="mqtt.msgtype==3 && (ip.src==#{mqttsrv_ip}||ip.src==#{clientIP2})"
-pub_filter="mqtt.msgtype==3 && ip.src==#{clientIP1}"
-pub_filter2="mqtt.msgtype==3 && ip.src==#{clientIP2}"
+ex_filter="mqtt.msgtype==3 && (ip.src==#{mqttsrv_ip}||ip.src==#{localIP})"
+ex_filter2="mqtt.msgtype==3 && (ip.src==#{mqttsrv_ip}||ip.src==#{remote_clientIP})"
+pub_filter="mqtt.msgtype==3 && ip.src==#{localIP}"
+pub_filter2="mqtt.msgtype==3 && ip.src==#{remote_clientIP}"
 rev_filter="mqtt.msgtype==3 && ip.src==#{mqttsrv_ip}"
 ###DRb
 DRb.start_service
@@ -35,7 +38,6 @@ r_tshark=DRbObject.new_with_uri(URI_ADDR)
 
 #1 开始抓包
 puts "[#{Time.now}]step 1: capture beginning....."
-l_tshark=ZL::Tshark.new(intf) 	
 #本地客户端抓包
 l_tshark.capture(cap_filter,filesize,filenum)	
 #远程客户端抓包
@@ -47,7 +49,7 @@ tsung=ZL::Tsung.new(xmlpath)
 flag=tsung.tsung_start
 
 #3 结束tsung，停止抓包
-puts "[#{Time.now}]step 3: tsung end and tshark stop....."
+puts "[#{Time.now}]step 3: tsung finished  and tshark stoped....."
 if flag==true
   r_tshark.linuxpkill(tshark_process)
   l_tshark.linuxpkill(tshark_process)

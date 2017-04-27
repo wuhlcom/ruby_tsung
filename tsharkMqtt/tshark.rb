@@ -14,16 +14,18 @@ module ZL
     include DRb::DRbUndumped 
     #default display filter fields
     FTIME="frame.time"
+    TIME_EPOCH='frame.time_epoch'
     IPSRC="ip.src"
     IPDST="ip.dst"
     MQTOPIC="mqtt.topic"
     MQMSG="mqtt.msg"
     MSGTYPE="mqtt.msgtype"
-    FIELDS="-e frame.time -e #{MQTOPIC} -e #{MQMSG}" 
+    FIELDS="-e #{FTIME} -e #{TIME_EPOCH} -e #{MQTOPIC} -e #{MQMSG}" 
     EMPTYFLAG=false #调试使用当为true会清空数据库表
     #DEFAULT_PKGSDIR=File.expand_path("packets",File.dirname(__FILE__))
     DEFAULT_PKGSDIR="packets"
-
+    
+    attr_accessor :pkgsdir,:pkgs_expdir
     def initialize(intf="eth0",pkgsdir=DEFAULT_PKGSDIR,filename="tsung_mqtt.pcapng")
        @intf=intf
        pkgsdir="./#{pkgsdir}/#{Time.now.strftime("%Y%m%d-%H%M%S")}"
@@ -45,8 +47,11 @@ module ZL
     #获取所有包文件名
     def get_pkgfiles()
         chownR_pkg
+p	pkg_basename=File.basename(@filename,".*")
+p       @pkgsdir
+p       Dir.glob("#{@pkgsdir}/*")
   	files=[]
-  	files=Dir.glob("#{@pkgsdir}/*").select{|file|file =~ /#{@filename}/}	
+  	files=Dir.glob("#{@pkgsdir}/*").select{|file|file =~ /#{pkg_basename}/}	
     end
 
     def set_fields(efields="")
@@ -209,18 +214,17 @@ module ZL
 	pkg_arr=tshark_rtfields(filter,efields)	
 	if !pkg_arr.nil? && !pkg_arr.empty?					
     	    pkg_arr.each do|item|				
-	     tstr1=item[FTIME]
-	     t1=Time.parse(tstr1)
-	     pkgs_hash={pub_time: t1,msg: item[MQMSG],topic: item[MQTOPIC]}
-	     pkgs<<pkgs_hash
-	     if pkgs.size==pkgsize #当保存的数量达到rsize个写入数据库
+	      p pkgs_hash={pub_time: item[FTIME],pub_epoch: item[TIME_EPOCH].to_f,msg: item[MQMSG],topic: item[MQTOPIC]}
+	       pkgs<<pkgs_hash
+	       if pkgs.size==pkgsize #当保存的数量达到rsize个写入数据库
 	          self.add_pub(pkgs)
 		  pkgs=[] #清空
-	     end
+	       end
 	   end	
-	   self.add_pub(pkgs) unless pkgs.empty?	       										                  else
+	   self.add_pub(pkgs) unless pkgs.empty?
+        else
 		msg="#{filter} No packet captured"
-	end		
+ 	end		
     end
 
     # tshark -r mqtt.pcapng -Tfields -e frame.time -e mqtt.msg -e mqtt.topic -e mqtt.msgtype -Y "mqtt.msgtype==3 && ip.src==192.168.10.8"
@@ -229,10 +233,9 @@ module ZL
 	      pkg_arr=tshark_rtfields(filter,efields)
 	      if !pkg_arr.nil? && !pkg_arr.empty?						
 		  pkg_arr.each do|item|
-			tstr1=item[FTIME]
-			t1=Time.parse(tstr1)
+			args={revpub_time:item[FTIME],revpub_epoch:item[TIME_EPOCH].to_f}
 			topic=item[MQTOPIC]
-			update_pub(topic,t1) #update pubs record with the time of  packet recieved 	 						
+			update_pub(topic,args) #update pubs record with the time of  packet recieved 	 						
 	          end											           
 	     else
 	 	  msg="#{filter} No packet captured"
@@ -246,8 +249,9 @@ module ZL
     # rev_efields,显示报文哪些字段
     # pkgsize,每个写入数据库的数量
     def write_records(ex_filter,pub_filter,rev_filter,pub_efields="",rev_efields="",pkgsize=300)
-		src_pkgs=get_pkgfiles()
-		src_pkgs.each do |pkgpath|		
+p		src_pkgs=get_pkgfiles()
+		src_pkgs.each do |pkgpath|
+			p pkgpath		
 			 export_pkgs(pkgpath,ex_filter)		
 			 pub_pkg(pub_filter,pub_efields,pkgsize)		 
 			 revpub_pkg(rev_filter,rev_efields)			 
@@ -265,20 +269,24 @@ end #ZL
 
 if __FILE__==$0
    require 'benchmark'
-   pkgdir="captures"
-   filename="tt" 
+   pkgdir="packets/20170426-164040"
+   expdir="packets/20170426-164040/expkgs"
+   filename="tsung_mqtt" 
    cap_filter="tcp"
    intf="eth1"
-   ex_filter="mqtt.msgtype==3 && (ip.src==192.168.10.166||ip.src==192.168.10.8)"
-   pub_filter="mqtt.msgtype==3 && ip.src==192.168.10.166"
+   ex_filter="mqtt.msgtype==3 && (ip.src==192.168.10.31||ip.src==192.168.10.8)"
+   pub_filter="mqtt.msgtype==3 && ip.src==192.168.10.31"
    rev_filter="mqtt.msgtype==3 && ip.src==192.168.10.8"
  
   #   Benchmark.bm(7) do |x|
   #  	 x.report("pubs"){ 		
    	    tshark=ZL::Tshark.new(intf) 	
-	    #tshark.write_records(ex_filter,pub_filter,rev_filter)
+   	    tshark.pkgsdir=pkgdir	
+   	    tshark.pkgs_expdir=expdir	
+#	    tshark.write_records(ex_filter,pub_filter,rev_filter)
+	    tshark.calculate_delay_epoch
  	    #tshark.write_result
-	    tshark.capture(cap_filter,10,1)	
+	    #tshark.capture(cap_filter,10,1)	
 	
   #	 }
   #end

@@ -16,17 +16,19 @@ module ZL
    	 #创建数据库
    	 mysql.create
    rescue =>ex 
-     p ex.message
+        ex.message
    end
   
     ActiveRecord::Base.establish_connection(configuration)   
     @@adapter=ActiveRecord::Base.connection
+
+
     #判断数据表是否存在，不存在则创建
     unless @@adapter.data_source_exists?(:delays)
       puts "creating table delays....."
       @@adapter.create_table :delays, force: true do |t|       
-         t.time  :pub_time  
-         t.decimal :delay_time 
+         t.string  :pub_time 
+         t.decimal :delay_time,:precision=>18,:scale=>7
          t.timestamps
       end
     end 
@@ -34,9 +36,11 @@ module ZL
     unless @@adapter.data_source_exists?(:pubs)
       puts "creating table pubs....."
       @@adapter.create_table :pubs, force: true do |t|       
-         t.time :pub_time  
-         t.time :revpub_time
-         t.decimal :delay_time
+         t.string :pub_time
+         t.decimal:pub_epoch,:precision=>18,:scale=>7
+         t.string :revpub_time
+         t.decimal:revpub_epoch,:precision=>18,:scale=>7
+         t.decimal :delay_time,:precision=>18,:scale=>7
          t.text :msg
          t.text :topic 
          t.timestamps
@@ -54,9 +58,9 @@ module ZL
     unless @@adapter.data_source_exists?(:results)
       puts "creating table results....."
       @@adapter.create_table :results, force: true do |t| 
-         t.decimal :average_delay      
-         t.decimal :maximum_delay  
-         t.decimal :minimum_delay 
+         t.decimal :average_delay,:precision=>18,:scale=>7
+         t.decimal :maximum_delay,:precision=>18,:scale=>7
+         t.decimal :minimum_delay,:precision=>18,:scale=>7
          t.integer :count_delay
          t.timestamps
       end 
@@ -90,9 +94,9 @@ module ZL
         Pub.create!(args)
     end
 
-   def update_pub(topic,t)
+   def update_pub(topic,args)
           pub = Pub.where(topic: topic) #update pub record
-          pub.update(revpub_time: t)   
+          pub.update(args)   
     end
    
     def add_error(args)
@@ -111,8 +115,14 @@ module ZL
        Error.delete_all      
     end
 
-    def delays
-      @@adapter.exec_update('update pubs set delay_time=(strftime("%Y%m%d%H%M%f",revpub_time)-strftime("%Y%m%d%H%M%f",pub_time)) where revpub_time is not null')
+    def calculate_delays
+     # @@adapter.exec_update('update pubs set delay_time=(strftime("%Y%m%d%H%M%f",revpub_time)-strftime("%Y%m%d%H%M%f",pub_time)) where revpub_time is not null')
+      @@adapter.execute('update pubs set delay_time=(strftime("%Y%m%d%H%M%f",revpub_time)-strftime("%Y%m%d%H%M%f",pub_time)) where revpub_time is not null')
+    end
+    
+   def calculate_delay_epoch
+#      @@adapter.exec_update('update pubs set delay_time=(revpub_epoch-pub_epoch) where revpub_epoch is not null')
+      @@adapter.execute('update pubs set delay_time=(revpub_epoch-pub_epoch) where revpub_epoch is not null')
     end
 
     def result
