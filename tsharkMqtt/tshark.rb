@@ -209,10 +209,11 @@ module ZL
 	self.empty_pub if EMPTYFLAG
 	fail("pkgsize must not more than 500") if pkgsize>500
         pkgs=[]	
+	ip=ifip(@intf)
 	pkg_arr=tshark_rtfields(filter,efields)	
 	if !pkg_arr.nil? && !pkg_arr.empty?					
     	    pkg_arr.each do|item|				
-	       pkgs_hash={pub_time: item[FTIME],pub_epoch: item[TIME_EPOCH].to_f,msg: item[MQMSG],topic: item[MQTOPIC],ip:@intf}
+	       pkgs_hash={pub_time: item[FTIME],pub_epoch: item[TIME_EPOCH].to_f,msg: item[MQMSG],topic: item[MQTOPIC],ip:ip}
 	       pkgs<<pkgs_hash
 	       if pkgs.size==pkgsize #当保存的数量达到rsize个写入数据库
 	          self.add_pub(pkgs)

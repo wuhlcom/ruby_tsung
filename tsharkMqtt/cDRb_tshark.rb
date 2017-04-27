@@ -20,13 +20,17 @@ filesize=1000
 filenum=2
 filename="mqtt" 
 cap_filter="tcp port 1883"
+#初始化本地Tshark对象
+l_tshark=ZL::Tshark.new(intf) 
+#本机IP地址	
+localIP=l_tshark.ifip(intf)
 ###parse packets filters
 ex_filter="mqtt.msgtype==3 && (ip.src==#{mqttsrv_ip}||ip.src==#{localIP})"
 ex_filter2="mqtt.msgtype==3 && (ip.src==#{mqttsrv_ip}||ip.src==#{remote_clientIP})"
 pub_filter="mqtt.msgtype==3 && ip.src==#{localIP}"
 pub_filter2="mqtt.msgtype==3 && ip.src==#{remote_clientIP}"
 rev_filter="mqtt.msgtype==3 && ip.src==#{mqttsrv_ip}"
-###DRb
+###DRb 启动
 DRb.start_service
 r_tshark=DRbObject.new_with_uri(URI_ADDR)
 
@@ -34,9 +38,6 @@ r_tshark=DRbObject.new_with_uri(URI_ADDR)
 
 #1 开始抓包
 puts "[#{Time.now}]step 1: capture beginning....."
-l_tshark=ZL::Tshark.new(intf) 
-#本机IP地址	
-localIP=l_tshark.ifip(intf)
 #本地客户端抓包
 l_tshark.capture(cap_filter,filesize,filenum)	
 #远程客户端抓包
