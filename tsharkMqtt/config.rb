@@ -17,7 +17,7 @@ URI_ADDR="druby://#{@drbsrv_ip}:#{@drbport}" #druby address
 @packetsdir="packets"
 #保存的报文件名
 @packetname="tsung_mqtt.pcapng"
-@filesize=1000    #抓包保存单个文件大小
+@filesize=50000    #抓包保存单个文件大小
 @filenum=2        #保存的文件数
 @cap_filter="tcp port 1883" #捕获报文时过滤条件
 

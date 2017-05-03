@@ -25,7 +25,7 @@ module ZL
     #DEFAULT_PKGSDIR=File.expand_path("packets",File.dirname(__FILE__))
     DEFAULT_PKGSDIR="packets"
     
-    attr_accessor :pkgsdir,:pkgs_expdir
+    attr_accessor :pkgsdir,:pkgs_expdir,:pkgs
     def initialize(intf="eth0",pkgsdir=DEFAULT_PKGSDIR,filename="tsung_mqtt.pcapng")
        @intf=intf
        pkgsdir="./#{pkgsdir}/#{Time.now.strftime("%Y%m%d-%H%M%S")}"
@@ -205,7 +205,7 @@ module ZL
     # tshark -r mqtt.pcapng -Tfields -e frame.time -e ip.src -e ip.dst -e mqtt.msg -e mqtt.topic -Y "mqtt.msgtype==3 && ip.src==192.168.10.166"
     #针对pub，解析报文并保存到数据库
     #pkgsize，一次写入数据库条目数，修改此值能略微提高速率
-    def pub_pkg(filter,efields="",pkgsize)
+    def pub_pkg(filter,pkgsize,efields="")
 	self.empty_pub if EMPTYFLAG
 	fail("pkgsize must not more than 500") if pkgsize>500
         pkgs=[]	
@@ -250,8 +250,9 @@ module ZL
     def write_records(ex_filter,pub_filter,rev_filter,pub_efields="",rev_efields="",pkgsize=300)
       	        src_pkgs=get_pkgfiles()
 		src_pkgs.each do |pkgpath|
+		    #@pkgs=pkgpath
 		    export_pkgs(pkgpath,ex_filter)		
-		    pub_pkg(pub_filter,pub_efields,pkgsize)		 
+		    pub_pkg(pub_filter,pkgsize,pub_efields)		 
 		    revpub_pkg(rev_filter,rev_efields)			 
 		end
     end
@@ -267,22 +268,31 @@ end #ZL
 
 if __FILE__==$0
    require 'benchmark'
-   pkgdir="packets/20170426-164040"
+   pkgdir="packets/20170503-160841"
    expdir="packets/20170426-164040/expkgs"
    filename="tsung_mqtt" 
    cap_filter="tcp"
    intf="eth1"
    ex_filter="mqtt.msgtype==3 && (ip.src==192.168.10.31||ip.src==192.168.10.8)"
    pub_filter="mqtt.msgtype==3 && ip.src==192.168.10.31"
-   rev_filter="mqtt.msgtype==3 && ip.src==192.168.10.8"
+   rev_filter="mqtt.msgtype==3 && ip.src==192.168.10.200"
  
   #   Benchmark.bm(7) do |x|
   #  	 x.report("pubs"){ 		
-   	    tshark=ZL::Tshark.new(intf) 	
-   	    tshark.pkgsdir=pkgdir	
-   	    tshark.pkgs_expdir=expdir	
-#	    tshark.write_records(ex_filter,pub_filter,rev_filter)
-	    tshark.calculate_delay_epoch
+   	    tshark=ZL::Tshark.new(intf)
+   	    #tshark.pkgsdir=pkgdir	
+	    tshark.pkgs="packets/20170503-160841/tsung_mqtt_00001_20170503160844.pcapng"
+	    #rs=tshark.tshark_rtfields(pub_filter)	
+	    #rs=tshark.tshark_rtfields(rev_filter)	
+	    #pp rs
+            #p rs.size
+	    file=tshark.pub_pkg(pub_filter,300)	
+	    file=tshark.revpub_pkg(rev_filter)	
+      
+   	    #tshark.pkgsdir=pkgdir	
+  #  	    tshark.pkgs_expdir=expdir	
+  #	    tshark.write_records(ex_filter,pub_filter,rev_filter)
+  #	    tshark.calculate_delay_epoch
  	    #tshark.write_result
 	    #tshark.capture(cap_filter,10,1)	
 	
