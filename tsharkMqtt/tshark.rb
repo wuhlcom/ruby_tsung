@@ -67,12 +67,12 @@ module ZL
 		@capthr=Thread.new do
 	             rs=`sudo tshark -i #{@intf} -f "#{filter}" -w #{@pkgspath} -a filesize:#{filesize} -a files:#{fileNumber}`
 	        end
-        	sleep 5
+        	sleep 10
 	        #@capthr.abort_on_exception=true
-		rescue =>ex
-	           puts ex.message.to_s
-		end
-		return @capthr
+	rescue =>ex
+                puts ex.message.to_s
+	end
+	return @capthr
      end 
    
      def stop_cap

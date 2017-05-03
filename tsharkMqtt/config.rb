@@ -10,7 +10,7 @@
 @drbsrv_ip="192.168.10.30" #druby server ip
 @drbport="65534" #drb端口
 @remote_clientIP="192.168.10.30" #tsung remote client
-@mqttsrv_ip="192.168.10.8" #mqtt server ip
+@mqttsrv_ip="192.168.10.200" #mqtt server ip
 URI_ADDR="druby://#{@drbsrv_ip}:#{@drbport}" #druby address
 ##############capture parameters
 #抓包保存目录
