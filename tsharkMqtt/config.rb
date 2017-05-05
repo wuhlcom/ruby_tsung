@@ -1,15 +1,15 @@
 #执行机网卡名
 @local_intf="eth1"
 #分机网卡名
-@remote_intf="eth1"
+@remote_intf="eth0"
 ###tshark 服务名
 @tshark_process="tshark"
 ###xmlpath tsung文件路径
 @xmlpath="./xmls/mqtt_csv.xml"
 ###############ruby server ip and port
-@drbsrv_ip="192.168.10.30" #druby server ip
+@drbsrv_ip="192.168.10.164" #druby server ip
 @drbport="65534" #drb端口
-@remote_clientIP="192.168.10.30" #tsung remote client
+@remote_clientIP="192.168.10.164" #tsung remote client
 @mqttsrv_ip="192.168.10.200" #mqtt server ip
 URI_ADDR="druby://#{@drbsrv_ip}:#{@drbport}" #druby address
 ##############capture parameters

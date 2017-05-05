@@ -48,8 +48,8 @@ module ZL
     def get_pkgfiles()
         chownR_pkg
 	pkg_basename=File.basename(@filename,".*")
-  	files=[]
-  	files=Dir.glob("#{@pkgsdir}/*").select{|file|file =~ /#{pkg_basename}/}	
+  	@src_pkgs=[]
+  	@src_pkgs=Dir.glob("#{@pkgsdir}/*").select{|file|file =~ /#{pkg_basename}/}	
     end
 
     def set_fields(efields="")
@@ -263,6 +263,30 @@ module ZL
 		    revpub_pkg(rev_filter,rev_efields)			 
 		end
     end
+
+    # ex_filter,导出报文过滤条件
+    # pub_filter,发布消息过滤条件
+    # pub_efields,显示报文哪些字段
+    # pkgsize,每个写入数据库的数量
+    def write_pubs(ex_filter,pub_filter,pkgsize=300,pub_efields="")
+                @src_pkgs.each do |pkgpath|
+                    @pkgs=pkgpath
+                    #export_pkgs(pkgpath,ex_filter)             
+                    pub_pkg(pub_filter,pkgsize,pub_efields)
+                end
+    end
+
+    # ex_filter,导出报文过滤条件
+    # rev_filter,收到布消息过滤条件
+    # rev_efields,显示报文哪些字段
+    # pkgsize,每个写入数据库的数量
+    def write_revpubs(rev_filter,pkgsize=300,rev_efields="")
+                @src_pkgs.each do |pkgpath|
+                    @pkgs=pkgpath
+                    revpub_pkg(rev_filter,rev_efields)
+                end
+    end
+
 
     def write_result
 	  calculate_delay_epoch

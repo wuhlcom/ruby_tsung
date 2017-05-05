@@ -39,9 +39,14 @@ end
 
 #4 解析报文并写入数据库
 puts "[#{Time.now}]step 4: parser packets..."
-l_tshark.write_records(ex_filter,pub_filter,rev_filter)
-r_tshark.write_records(ex_filter2,pub_filter2,rev_filter)
-
+#先写入所有pub
+l_tshark.get_pkgfiles
+l_tshark.write_pubs(ex_filter,pub_filter)
+r_tshark.get_pkgfiles
+r_tshark.write_pubs(ex_filter2,pub_filter2)
+#再更新所有revpub
+l_tshark.write_revpubs(rev_filter)
+r_tshark.write_revpubs(rev_filter)
 #5 写入最终结果 
 puts "[#{Time.now}]step 5: result..."
 l_tshark.write_result
