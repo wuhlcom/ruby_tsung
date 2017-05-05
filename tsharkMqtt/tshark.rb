@@ -28,22 +28,26 @@ module ZL
     attr_accessor :pkgsdir,:pkgs_expdir,:pkgs
     def initialize(intf="eth0",pkgsdir=DEFAULT_PKGSDIR,filename="tsung_mqtt.pcapng")
        @intf=intf
-       pkgsdir="./#{pkgsdir}/#{Time.now.strftime("%Y%m%d-%H%M%S")}"
-       @pkgsdir=pkgsdir
-       mk_dir(@pkgsdir)
-       @pkgs_expdir="#{@pkgsdir}/expkgs"
-       mk_dir(@pkgs_expdir)
-       chmod_R("777",DEFAULT_PKGSDIR) 
+       @pkgsdir="./#{pkgsdir}/#{Time.now.strftime("%Y%m%d-%H%M%S")}"
        @filename=filename
        @pkgspath="#{@pkgsdir}/#{@filename}"
        @pkgs=nil
        @capthr=nil
     end
-     
+    
+    #更改目录，子目录，子文件，子目录权限 
     def chownR_pkg
         chown_R(DEFAULT_PKGSDIR)
     end
-   
+  
+    #创建抓包目录 
+    def create_dirs
+       mk_dir(@pkgsdir)
+       @pkgs_expdir="#{@pkgsdir}/expkgs"
+       mk_dir(@pkgs_expdir)
+       chmod_R("777",DEFAULT_PKGSDIR) 
+    end
+
     #获取所有包文件名
     def get_pkgfiles()
         chownR_pkg
@@ -63,11 +67,12 @@ module ZL
      #tshark -i eth0 -f "tcp port 1883" -Tfields -e ip.src -e ip.dst -e mqtt.msg -e mqtt.topic -E header=y -w mqtt.pcapng -a duration:200 
      #tshark -i eth0 -f "tcp port 1883" -w mqtt.pcapng -a filesize:1000000 -a files:10
      def capture(filter,filesize=200000,fileNumber=10)
+	create_dirs
         begin
 		@capthr=Thread.new do
 	             rs=`sudo tshark -i #{@intf} -f "#{filter}" -w #{@pkgspath} -a filesize:#{filesize} -a files:#{fileNumber}`
 	        end
-        	sleep 10
+        	sleep 10 
 	        #@capthr.abort_on_exception=true
 	rescue =>ex
                 puts ex.message.to_s

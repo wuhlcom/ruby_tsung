@@ -23,7 +23,6 @@ puts "[#{Time.now}]step 1: capture beginning....."
 l_tshark.capture(@cap_filter,@filesize,@filenum)	
 #远程客户端抓包
 r_tshark.capture(@cap_filter,@filesize,@filenum)
-sleep 60
 #2 开始tsung
 puts "[#{Time.now}]step 2: tsung starting....."
 tsung=ZL::Tsung.new(@xmlpath)
@@ -32,7 +31,7 @@ flag=tsung.tsung_start
 #3 结束tsung，停止抓包
 puts "[#{Time.now}]step 3: tsung finished  and tshark stoped....."
 if flag==true
-  sleep 30
+  sleep 10
   r_tshark.linuxpkill(@tshark_process)
   l_tshark.linuxpkill(@tshark_process)
 end
