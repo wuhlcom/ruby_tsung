@@ -28,7 +28,7 @@ module ZL
       puts "creating table delays....."
       @@adapter.create_table :delays, force: true do |t|       
          t.string  :pub_time 
-         t.decimal :delay_time,:precision=>18,:scale=>7
+         t.decimal :delay_time,:precision=>21,:scale=>10
          t.timestamps
       end
     end 
@@ -37,10 +37,10 @@ module ZL
       puts "creating table pubs....."
       @@adapter.create_table :pubs, force: true do |t|       
          t.string :pub_time
-         t.decimal:pub_epoch,:precision=>18,:scale=>7
+         t.decimal:pub_epoch,:precision=>21,:scale=>10
          t.string :revpub_time
-         t.decimal:revpub_epoch,:precision=>18,:scale=>7
-         t.decimal :delay_time,:precision=>18,:scale=>7
+         t.decimal:revpub_epoch,:precision=>21,:scale=>10
+         t.decimal :delay_time,:precision=>21,:scale=>10
          t.text :msg
          t.text :topic
 	 t.string :ip 
@@ -59,9 +59,9 @@ module ZL
     unless @@adapter.data_source_exists?(:results)
       puts "creating table results....."
       @@adapter.create_table :results, force: true do |t| 
-         t.decimal :average_delay,:precision=>18,:scale=>7
-         t.decimal :maximum_delay,:precision=>18,:scale=>7
-         t.decimal :minimum_delay,:precision=>18,:scale=>7
+         t.decimal :average_delay,:precision=>21,:scale=>10
+         t.decimal :maximum_delay,:precision=>21,:scale=>10
+         t.decimal :minimum_delay,:precision=>21,:scale=>10
          t.integer :count_delay
          t.timestamps
       end 
@@ -137,3 +137,12 @@ module ZL
 
   end #Recorder
  end #ZL 
+
+if __FILE__==$0
+   require 'bigdecimal'
+   epoch = BigDecimal.new("1493889880.589416361")
+   include ZL::Recorder
+   topic="tsungtopic1"
+   args={:pub_time=>epoch}
+   update_pub(topic,args) 
+end

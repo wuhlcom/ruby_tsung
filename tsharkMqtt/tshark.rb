@@ -139,19 +139,26 @@ module ZL
 	   fields=set_fields efields
 	   #分割fields作为key
 	   keys=fields.split(/\s*-e\s*/)
-		keys.delete("")	
-		rarr=[]	
-		rs=`tshark -r #{@pkgs} -Tfields #{fields} -Y "#{filter}"` #注意filer外要加双引号
-		if !rs.nil?		
+  	   keys.delete("")	
+	   rarr=[]	
+	   rs=`tshark -r #{@pkgs} -Tfields #{fields} -Y "#{filter}"` #注意filer外要加双引号
+	   if !rs.nil?		
 			value_arr=rs.split("\n") #分割不同报文
 			value_arr.each do |item|
 				rhash={}
 				values=item.split(/\t/) #分割一个报文中不同字段
-				values.each_with_index {|value,index|rhash[keys[index]]=value}
+
+				values.each_with_index {|value,index|
+                                        if keys[index]==TIME_EPOCH
+                                           value=BigDecimal.new(value)
+                                        end 
+                                        rhash[keys[index]]=value
+                                }   
+
 				rarr<<rhash
 			end
-		end
-		return rarr
+	  end
+	  return rarr
   end
 
   def json_delay(filter,efields="")
@@ -213,7 +220,7 @@ module ZL
 	pkg_arr=tshark_rtfields(filter,efields)	
 	if !pkg_arr.nil? && !pkg_arr.empty?					
     	    pkg_arr.each do|item|				
-	       pkgs_hash={pub_time: item[FTIME],pub_epoch: item[TIME_EPOCH].to_f,msg: item[MQMSG],topic: item[MQTOPIC],ip:ip}
+	       pkgs_hash={pub_time: item[FTIME],pub_epoch: item[TIME_EPOCH],msg: item[MQMSG],topic: item[MQTOPIC],ip:ip}
 	       pkgs<<pkgs_hash
 	       if pkgs.size==pkgsize #当保存的数量达到rsize个写入数据库
 	          self.add_pub(pkgs)
@@ -232,7 +239,7 @@ module ZL
 	      pkg_arr=tshark_rtfields(filter,efields)
 	      if !pkg_arr.nil? && !pkg_arr.empty?						
 		  pkg_arr.each do|item|
-			args={revpub_time:item[FTIME],revpub_epoch:item[TIME_EPOCH].to_f}
+			args={revpub_time:item[FTIME],revpub_epoch:item[TIME_EPOCH]}
 			topic=item[MQTOPIC]
 			update_pub(topic,args) #update pubs record with the time of  packet recieved 	 						
 	          end											           
@@ -250,8 +257,8 @@ module ZL
     def write_records(ex_filter,pub_filter,rev_filter,pub_efields="",rev_efields="",pkgsize=300)
       	        src_pkgs=get_pkgfiles()
 		src_pkgs.each do |pkgpath|
-		    #@pkgs=pkgpath
-		    export_pkgs(pkgpath,ex_filter)		
+		    @pkgs=pkgpath
+		    #export_pkgs(pkgpath,ex_filter)		
 		    pub_pkg(pub_filter,pkgsize,pub_efields)		 
 		    revpub_pkg(rev_filter,rev_efields)			 
 		end
@@ -282,12 +289,12 @@ if __FILE__==$0
    	    tshark=ZL::Tshark.new(intf)
    	    #tshark.pkgsdir=pkgdir	
 	    tshark.pkgs="packets/20170503-160841/tsung_mqtt_00001_20170503160844.pcapng"
-	    #rs=tshark.tshark_rtfields(pub_filter)	
+	    pp rs=tshark.tshark_rtfields(pub_filter)	
 	    #rs=tshark.tshark_rtfields(rev_filter)	
 	    #pp rs
             #p rs.size
-	    file=tshark.pub_pkg(pub_filter,300)	
-	    file=tshark.revpub_pkg(rev_filter)	
+	    #file=tshark.pub_pkg(pub_filter,300)	
+	    #file=tshark.revpub_pkg(rev_filter)	
       
    	    #tshark.pkgsdir=pkgdir	
   #  	    tshark.pkgs_expdir=expdir	
