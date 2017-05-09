@@ -8,6 +8,7 @@ require_relative 'public_methods'
 require_relative 'tsung'
 require_relative 'redis'
 require_relative 'tsung_xml'
+require_relative 'tsung_csv'
 require 'drb/drb'
 module ZL
 
@@ -16,7 +17,8 @@ module ZL
     include PubMethods 
     include TsungOpt
     include Redis
-    include ParseXML 
+    include ParseXML
+    include TsungCSV 
     include DRb::DRbUndumped
  
     #default display filter fields

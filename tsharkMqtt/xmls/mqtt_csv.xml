@@ -1,6 +1,10 @@
-<?xml version="1.0"?>
+<?xml version='1.0'?>
+
+
+
+
 <!DOCTYPE tsung SYSTEM "/usr/share/tsung/tsung-1.0.dtd">
-<tsung loglevel="notice" version="1.0">
+<tsung loglevel='notice' version='1.0'>
    	 <clients>
    	    <!-- <client host="ubuntu14041" weight="1" maxusers="10000">
    	     	<ip value="192.168.10.30"></ip>	
@@ -9,12 +13,12 @@
        	     <client host="ubuntu14042" weight="1" maxusers="10000">
    	     	<ip value="192.168.10.31"></ip>
  	     </client> -->
-       	     <client host="ubuntu14042"  maxusers="10000">
-   	     	<ip value="192.168.10.31"></ip>
+       	     <client host='zhilu' maxusers='40000'>
+   	     	<ip value='192.168.10.31'/>
  	     </client> 
    	 </clients>
 	<servers>
-              <server host="192.168.10.200" port="1883" type="tcp" />
+              <server host='192.168.10.200' port='1883' type='tcp'/>
 	</servers>
 
     <load>
@@ -33,67 +37,67 @@
 		<!-- 如果要创建subscirber maxnumber 10000个，每秒50个session(arrivalrate="50"每秒50)，
 		需10000/50=200s,但在实际设置时duration要略大于这个时间如220，这样才能保证所有的订阅都能成功，并且sesseion 中sub的等待
 			<mqtt type="waitForMessages" timeout="240"></mqtt>要略大于duration比如设置为240-->
-		<arrivalphase phase="1" duration="70" unit="second"> 
-			<session_setup name="mqtt_subscriber" probability="100" /> 
-			<session_setup name="mqtt_publisher" probability="0" /> 
-			<users maxnumber="1000" arrivalrate="50" unit="second"/> 
+		<arrivalphase duration='70' phase='1' unit='second'> 
+			<session_setup name='mqtt_subscriber' probability='100'/> 
+			<session_setup name='mqtt_publisher' probability='0'/> 
+			<users arrivalrate='50' maxnumber='1000' unit='second'/> 
 		 </arrivalphase> 
 		 
-		 <arrivalphase phase="2" duration="70" unit="second"> 
-			<session_setup name="mqtt_subscriber" probability="0"/> 
-			<session_setup name="mqtt_publisher" probability="100" /> 
-			<users maxnumber="1000" arrivalrate="50" unit="second"/> 
+		 <arrivalphase duration='70' phase='2' unit='second'> 
+			<session_setup name='mqtt_subscriber' probability='0'/> 
+			<session_setup name='mqtt_publisher' probability='100'/> 
+			<users arrivalrate='50' maxnumber='1000' unit='second'/> 
 		</arrivalphase> 
     </load>
 
     <options>
-		<option name="ports_range" min="1025" max="65535"/>		
-		<option name="file_server" id="subcsv" value="./csvs/sub.csv"/>		
-		<option name="file_server" id="pubcsv" value="./csvs/pub.csv"/>
+		<option max='65535' min='1025' name='ports_range'/>		
+		<option id='subcsv' name='file_server' value='./csvs/sub.csv'/>		
+		<option id='pubcsv' name='file_server' value='./csvs/pub.csv'/>
    </options>
  			
     <sessions> 	
 	
-		<session name="mqtt_publisher" probability="50" type="ts_mqtt">			 
-			<setdynvars sourcetype="file" fileid="pubcsv" delimiter="," order="iter">
-				<var name="pubid" />
-				<var name="pubtopic" />
-				<var name="pubmsg" />
+		<session name='mqtt_publisher' probability='50' type='ts_mqtt'>			 
+			<setdynvars delimiter=',' fileid='pubcsv' order='iter' sourcetype='file'>
+				<var name='pubid'/>
+				<var name='pubtopic'/>
+				<var name='pubmsg'/>
 			</setdynvars>
 			
-			<request subst="true">
-				<mqtt type="connect" clean_start="true" username="mqttclient" password="mqttclient" client_id="%%_pubid%%"></mqtt>
+			<request subst='true'>
+				<mqtt clean_start='true' client_id='%%_pubid%%' password='mqttclient' type='connect' username='mqttclient'/>
 			</request>           
 				
-			<request subst="true">
-				<mqtt type="publish" topic="%%_pubtopic%%">%%_pubmsg%%</mqtt>
+			<request subst='true'>
+				<mqtt topic='%%_pubtopic%%' type='publish'>%%_pubmsg%%</mqtt>
 			</request>
 			
            	<request>
-               		 <mqtt type="disconnect"></mqtt>
+               		 <mqtt type='disconnect'/>
            	</request>
        	</session>
 
- 		<session name="mqtt_subscriber" probability="50" type="ts_mqtt">
+ 		<session name='mqtt_subscriber' probability='50' type='ts_mqtt'>
 		
-			<setdynvars sourcetype="file" fileid="subcsv" delimiter="," order="iter">
-				<var name="subid" />
-				<var name="subtopic" />
+			<setdynvars delimiter=',' fileid='subcsv' order='iter' sourcetype='file'>
+				<var name='subid'/>
+				<var name='subtopic'/>
 			</setdynvars>
 	
-			<request subst="true">
-				<mqtt type="connect" clean_start="true" keepalive="60" username="mqttclient" password="mqttclient" client_id="%%_subid%%"></mqtt>
+			<request subst='true'>
+				<mqtt clean_start='true' client_id='%%_subid%%' keepalive='60' password='mqttclient' type='connect' username='mqttclient'/>
 			</request>
 
-			<request subst="true">
-				<mqtt type="subscribe" topic="%%_subtopic%%"></mqtt>
+			<request subst='true'>
+				<mqtt topic='%%_subtopic%%' type='subscribe'/>
 			</request>
 				
 			<!-- <thinktime value="0.5"></thinktime -->
 			
 			<request>
 				<!-- wait for 60s -->
-				<mqtt type="waitForMessages" timeout="220"></mqtt>
+				<mqtt timeout='220' type='waitForMessages'/>
 			</request>
 
 			<!-- <request subst="true"> -->
@@ -101,10 +105,14 @@
 			<!-- </request> -->
 
 			<request>
-				<mqtt type="disconnect"></mqtt>
+				<mqtt type='disconnect'/>
 			</request>
 			
         </session>	
 	
     </sessions>
 </tsung>
+
+
+
+

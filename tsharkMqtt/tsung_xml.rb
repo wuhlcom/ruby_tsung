@@ -54,7 +54,7 @@ module ZL
 
          def save_xml()
 	     @xmlfile2 = File.open(@xmlpath,"w")
-	     @xmlfile2.puts xml.write(STDOUT,2) #保存修改后的xml
+	     @xmlfile2.puts @xml.write(STDOUT,2) #保存修改后的xml
 	 end
 
 	 def close_xml
@@ -78,3 +78,12 @@ module ZL
       end #ParseXMl
 
 end #ZL
+
+if __FILE__==$0
+  include ZL::ParseXML
+  xmlpath="./xmls/mqtt_csv.xml"
+  hostname="zhilu"
+  ip="192.168.10.31"
+  change_client(xmlpath,hostname,ip)
+
+end

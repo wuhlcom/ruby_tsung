@@ -11,6 +11,8 @@
 @drbport="65534" #drb端口
 @remote_clientIP=@drbsrv_ip #tsung remote client
 @mqttsrv_ip="192.168.10.200" #mqtt server ip
+
+@acc_num=1000
 @redis_ip="192.168.10.200" #redis server ip
 @redis_port="6379" #redis port
 URI_ADDR="druby://#{@drbsrv_ip}:#{@drbport}" #druby address

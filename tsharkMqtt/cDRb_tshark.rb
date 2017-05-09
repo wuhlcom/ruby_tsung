@@ -36,31 +36,44 @@ l_tshark.hmset_accounts(@acc_num,@redis_ip,pub_id_pre1,"mqttclient","mqttclient"
 r_tshark.hmset_accounts(@acc_num,@redis_ip,sub_id_pre2,"mqttclient","mqttclient")
 r_tshark.hmset_accounts(@acc_num,@redis_ip,pub_id_pre2,"mqttclient","mqttclient")
 
-#3 修改tsung xml配置
-puts "[#{Time.now}]step 3:config tsung xml....."
-local_host=l_tshark.hostname
-remote_host=r_tshark.hostname
+#3 创建CSV文件
+puts "[#{Time.now}]step 3:create tsung csv....."
+topic1="tsungTopicz"
+msg1="tsungMsgz"
+topic2="tsungTopicl"
+msg2="tsungMsgl"
+l_tshark.tsung_csv(@csv_path,@acc_num,sub_id_pre1,topic1)
+l_tshark.tsung_csv(@csv_path,@acc_num,pub_id_pre1,topic1,msg1)
+
+r_tshark.tsung_csv(@csv_path,@acc_num,sub_id_pre2,topic2)
+r_tshark.tsung_csv(@csv_path,@acc_num,pub_id_pre2,topic2,msg2)
+#4 修改tsung xml配置
+puts "[#{Time.now}]step 4:config tsung xml....."
+p local_host=l_tshark.hostname
+p remote_host=r_tshark.hostname
 l_tshark.change_client(@xmlpath,local_host,localIP)
 remoteIP=r_tshark.ifip(@remote_intf)
-r_tshark.change_ip(@xmlpath,remote_host,remoteIP)
+r_tshark.change_client(@xmlpath,remote_host,remoteIP)
 
-#4 开始tsung##############################
-puts "[#{Time.now}]step 4: tsung starting....."
+#5 开始tsung##############################
+puts "[#{Time.now}]step 5: tsung starting....."
 #tsung=ZL::Tsung.new(@xmlpath)
 #flag=tsung.tsung_start
-r_tshark.tsung_start(@xmlpath)
-l_tshark.tsung_start(@xmlpath)
+flag1=r_tshark.tsung_start(@xmlpath)
+flag2=l_tshark.tsung_start(@xmlpath)
 
-#5 结束tsung，停止抓包########################
-puts "[#{Time.now}]step 5: tsung finished  and tshark stoped....."
-if flag==true
-  sleep 10
+#6 结束tsung，停止抓包########################
+puts "[#{Time.now}]step 6: tsung finished  and tshark stoped....."
+if flag1==true
   r_tshark.linuxpkill(@tshark_process)
+end
+
+if flag2==true
   l_tshark.linuxpkill(@tshark_process)
 end
 
-#6 解析报文并写入数据库
-puts "[#{Time.now}]step 6: parse packets..."
+#7 解析报文并写入数据库
+puts "[#{Time.now}]step 7: parse packets..."
 #先写入所有pub
 l_tshark.get_pkgfiles
 l_tshark.write_pubs(ex_filter,pub_filter)
@@ -69,8 +82,8 @@ r_tshark.write_pubs(ex_filter2,pub_filter2)
 #再更新所有revpub
 l_tshark.write_revpubs(rev_filter)
 r_tshark.write_revpubs(rev_filter)
-#5 写入最终结果 
-puts "[#{Time.now}]step 7: result..."
+#8 写入最终结果 
+puts "[#{Time.now}]step 8: result..."
 l_tshark.write_result
 
 

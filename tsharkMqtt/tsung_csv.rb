@@ -1,6 +1,8 @@
 require 'csv'
 
-class MqttCSV
+module ZL
+
+ module TsungCSV
    # Reading
    #  From a File
    
@@ -20,32 +22,28 @@ class MqttCSV
    
    # # All at Once
    # arr_of_arrs = CSV.parse("CSV,data,String")
-
-   def initialize(path)
-       @csv_path=path
-   end
    
   # Writing
   # To a File
-  def tsung_csv(s,e,args)
-    CSV.open(@csv_path, "wb") do |csv|
- 	for i in s..e
+  def tsung_csv(csv_path,num,*args)
+    CSV.open(csv_path, "wb") do |csv|
+ 	num.times.each do|i|
     	 csv << args.map{|item|"#{item}#{i}"}
         end 
     end
   end
 
+  end #TsungCSV
+
+end #zl
+
+
+if __FILE__==$0
+ include ZL::TsungCSV
+ csv_path="csvs/sub.csv"
+ sid=1
+ eid=1000
+ subject="test"
+ topic="tsungTopic"
+ tsung_csv(csv_path,eid,subject,topic)
 end
- #ruby tsung_csv.rb create_csv sub.csv 1 1000 tsungSub tsungTopic 
- #ruby tsung_csv.rb create_csv pub.csv 1 1000 tsungPub tsungTopic hello 
- index=ARGV.size-1
- if ARGV[0]=="create_csv"
-    csv_path=ARGV[1]
-    sid=ARGV[2]
-    eid=ARGV[3]
-    args=ARGV[4..index]
-    mqttcsv=MqttCSV.new(csv_path)
-    mqttcsv.tsung_csv(sid,eid,args)
-  else
-    puts "ARGV 0 Error"
-  end 
