@@ -1,5 +1,5 @@
 #执行机网卡名
-@local_intf="eth0"
+@local_intf="eth1"
 #分机网卡名
 @remote_intf="eth1"
 ###tshark 服务名
@@ -11,6 +11,8 @@
 @drbport="65534" #drb端口
 @remote_clientIP=@drbsrv_ip #tsung remote client
 @mqttsrv_ip="192.168.10.200" #mqtt server ip
+@redis_ip="192.168.10.200" #redis server ip
+@redis_port="6379" #redis port
 URI_ADDR="druby://#{@drbsrv_ip}:#{@drbport}" #druby address
 ##############capture parameters
 #抓包保存目录

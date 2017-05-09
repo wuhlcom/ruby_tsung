@@ -5,13 +5,20 @@ require 'json'
 require_relative 'float'
 require_relative 'recorder'
 require_relative 'public_methods'
+require_relative 'tsung'
+require_relative 'redis'
+require_relative 'tsung_xml'
 require 'drb/drb'
 module ZL
 
   class Tshark
     include Recorder 
     include PubMethods 
-    include DRb::DRbUndumped 
+    include TsungOpt
+    include Redis
+    include ParseXML 
+    include DRb::DRbUndumped
+ 
     #default display filter fields
     FTIME="frame.time"
     TIME_EPOCH='frame.time_epoch'

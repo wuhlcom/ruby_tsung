@@ -1,5 +1,15 @@
 require_relative 'public_methods'
 module ZL
+	module TsungOpt
+		include PubMethods
+		
+		def tsung_start(xmlpath,logdir="tsung_logs")
+			@tsung_log_dir=logdir
+		        @tsung_xml=xmlpath
+	   	        mk_dir(@tsung_log_dir)
+		        system("tsung -f #@tsung_xml -l #@tsung_log_dir start")
+		end
+	end
 
 	class Tsung
 
@@ -8,7 +18,7 @@ module ZL
 	   def initialize(xmlpath,logdir="tsungLogs")
 	   	    @xmlpath=xmlpath
 	   	    @logdir=logdir
-	   		mk_dir(@logdir)
+	   	    mk_dir(@logdir)
 	   end
 
 	   def tsung_start() 

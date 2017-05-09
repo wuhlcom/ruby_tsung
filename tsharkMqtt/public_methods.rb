@@ -3,17 +3,17 @@ require 'pp'
 module ZL
       module PubMethods
 
-      def mk_dir(dir)
+        def mk_dir(dir)
 		unless File.exists?(dir)
 	    	   FileUtils.mkdir_p(dir)  
 	    	end
-      end
+        end
 
-      def ifip(intf="eth0")
+        def ifip(intf="eth0")
 	    rs=`ifconfig #{intf}`
 	    #inet addr:192.168.10.166  Bcast:192.168.10.255  Mask:255.255.255.0
 	    rs.slice(/inet\s+addr:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+Bcast:/,1)
-     end
+       end
 
        def psef(cmd="tshark")
           #print `ps -ef|grep #{cmd}|grep -v grep`
@@ -33,22 +33,26 @@ module ZL
 	    rs=`whoami`.delete("\n")
        end
 
-	def uid()
+       def hostname
+	   rs=`hostname`.delete("\n")
+       end
+
+       def uid()
 	    `id -u #{whoami}`.delete("\n")
-	end
+       end
  	
-	def gid()
+       def gid()
 	   `id -g #{whoami}`.delete("\n")
-	end
+       end
 	
-	def chown_R(file)
+       def chown_R(file)
 	   usr=whoami
 	   `sudo chown -R  #{usr}:#{usr} #{file}`
-	end
+      end
 
-	def chmod_R(mode,file)
+      def chmod_R(mode,file)
            `sudo chmod -R #{mode} #{file}` 	 
-	end
+      end
 
    end #PubMethods
 end #ZL

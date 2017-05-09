@@ -1,0 +1,10 @@
+hmset CINFO:'wuhongliang0' USER mqttclient PASSWD mqttclient
+hmset CINFO:'wuhongliang1' USER mqttclient PASSWD mqttclient
+hmset CINFO:'wuhongliang2' USER mqttclient PASSWD mqttclient
+hmset CINFO:'wuhongliang3' USER mqttclient PASSWD mqttclient
+hmset CINFO:'wuhongliang4' USER mqttclient PASSWD mqttclient
+hmset CINFO:'wuhongliang5' USER mqttclient PASSWD mqttclient
+hmset CINFO:'wuhongliang6' USER mqttclient PASSWD mqttclient
+hmset CINFO:'wuhongliang7' USER mqttclient PASSWD mqttclient
+hmset CINFO:'wuhongliang8' USER mqttclient PASSWD mqttclient
+hmset CINFO:'wuhongliang9' USER mqttclient PASSWD mqttclient
