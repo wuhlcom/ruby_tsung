@@ -42,11 +42,12 @@ topic1="tsungTopicz"
 msg1="tsungMsgz"
 topic2="tsungTopicl"
 msg2="tsungMsgl"
-l_tshark.tsung_csv(@csv_path,@acc_num,sub_id_pre1,topic1)
-l_tshark.tsung_csv(@csv_path,@acc_num,pub_id_pre1,topic1,msg1)
+l_tshark.tsung_csv(@sub_csv,@acc_num,sub_id_pre1,topic1)
+l_tshark.tsung_csv(@pub_csv,@acc_num,pub_id_pre1,topic1,msg1)
 
-r_tshark.tsung_csv(@csv_path,@acc_num,sub_id_pre2,topic2)
-r_tshark.tsung_csv(@csv_path,@acc_num,pub_id_pre2,topic2,msg2)
+r_tshark.tsung_csv(@sub_csv,@acc_num,sub_id_pre2,topic2)
+r_tshark.tsung_csv(@pub_csv,@acc_num,pub_id_pre2,topic2,msg2)
+
 #4 修改tsung xml配置
 puts "[#{Time.now}]step 4:config tsung xml....."
 p local_host=l_tshark.hostname

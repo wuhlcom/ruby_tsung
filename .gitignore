@@ -7,4 +7,5 @@ testpkgdir
 *.pcap
 *.pcapng
 tsungLogs
+tsung_logs
 packets

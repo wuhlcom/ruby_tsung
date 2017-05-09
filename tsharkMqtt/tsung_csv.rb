@@ -1,8 +1,9 @@
 require 'csv'
-
+require_relative 'public_methods'
 module ZL
 
  module TsungCSV
+   include PubMethods
    # Reading
    #  From a File
    
@@ -26,6 +27,8 @@ module ZL
   # Writing
   # To a File
   def tsung_csv(csv_path,num,*args)
+    csv_dir=File.dirname(csv_path)
+    mk_dir(csv_dir)
     CSV.open(csv_path, "wb") do |csv|
  	num.times.each do|i|
     	 csv << args.map{|item|"#{item}#{i}"}
