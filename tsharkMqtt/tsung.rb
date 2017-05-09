@@ -15,7 +15,7 @@ module ZL
 
 	   include PubMethods 
 
-	   def initialize(xmlpath,logdir="tsungLogs")
+	   def initialize(xmlpath,logdir="tsung_logs")
 	   	    @xmlpath=xmlpath
 	   	    @logdir=logdir
 	   	    mk_dir(@logdir)
