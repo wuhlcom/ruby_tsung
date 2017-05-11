@@ -50,26 +50,30 @@ r_tshark.tsung_csv(@pub_csv,@acc_num,pub_id_pre2,topic2,msg2)
 
 #4 修改tsung xml配置
 puts "[#{Time.now}]step 4:config tsung xml....."
-p local_host=l_tshark.hostname
-p remote_host=r_tshark.hostname
-l_tshark.change_client(@xmlpath,local_host,localIP)
+local_host=l_tshark.hostname
+remote_host=r_tshark.hostname
+l_tshark.change_xml(@xmlpath,local_host,localIP,@sub_duration,@pub_duration,@acc_num,@sub_timeout)
 remoteIP=r_tshark.ifip(@remote_intf)
-r_tshark.change_client(@xmlpath,remote_host,remoteIP)
+r_tshark.change_xml(@xmlpath,remote_host,remoteIP,@sub_duration,@pub_duration,@acc_num,@sub_timeout)
 
 #5 开始tsung##############################
 puts "[#{Time.now}]step 5: tsung starting....."
 #tsung=ZL::Tsung.new(@xmlpath)
 #flag=tsung.tsung_start
-flag1=r_tshark.tsung_start(@xmlpath)
+Thread.new do
+	flag1=r_tshark.tsung_start(@xmlpath)
+end
+sleep 2
 flag2=l_tshark.tsung_start(@xmlpath)
 
 #6 结束tsung，停止抓包########################
 puts "[#{Time.now}]step 6: tsung finished  and tshark stoped....."
-if flag1==true
-  r_tshark.linuxpkill(@tshark_process)
-end
+#if flag1==true
+ # r_tshark.linuxpkill(@tshark_process)
+#end
 
 if flag2==true
+  r_tshark.linuxpkill(@tshark_process)
   l_tshark.linuxpkill(@tshark_process)
 end
 

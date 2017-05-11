@@ -52,6 +52,42 @@ module ZL
     	     end
 	 end
 
+	 def change_load_node(sub_phase_duration,sub_users_maxnum,pub_phase_duration,sub_phase_unit="second",sub_users_arrivalrate="50",sub_users_unit="second")
+                pub_phase_unit=sub_phase_unit
+                pub_users_arrivalrate=sub_users_maxnum
+                pub_users_maxnum=sub_users_maxnum
+                pub_users_unit=sub_users_unit
+		@load_flag=false
+                #############sub#############################
+                sub_arrivalphase=@xml.root.elements["load"].elements[1,"arrivalphase"]
+
+		if sub_arrivalphase.attributes["duration"]!=sub_phase_duration
+	                sub_arrivalphase.attributes["duration"]=sub_phase_duration
+			@load_flag=true
+	        end
+                sub_arrivalphase.attributes["unit"]=sub_phase_unit
+
+                sub_users=sub_arrivalphase.elements["users"]
+                sub_users.attributes["arrivalrate"]=sub_users_arrivalrate
+                if sub_users.attributes["maxnumber"]!=sub_users_maxnum
+	                sub_users.attributes["maxnumber"]=sub_users_maxnum
+			@load_flag=true||@load_flag
+		end
+                sub_users.attributes["unit"]=sub_users_unit
+                ##################pub#################
+                pub_arrivalphase=@xml.root.elements["load"].elements[2,"arrivalphase"]
+		if pub_arrivalphase.attributes["duration"]!=pub_phase_duration
+                	pub_arrivalphase.attributes["duration"]=pub_phase_duration
+			@load_flag=true||@load_flag
+		end
+                pub_arrivalphase.attributes["unit"]=pub_phase_unit
+
+                pub_users=pub_arrivalphase.elements["users"]
+                pub_users.attributes["arrivalrate"]=pub_users_arrivalrate
+                pub_users.attributes["maxnumber"]=pub_users_maxnum
+                pub_users.attributes["unit"]=pub_users_unit
+   end
+
          def save_xml()
 	     @xmlfile2 = File.open(@xmlpath,"w")
 	     @xmlfile2.puts @xml.write(STDOUT,2) #保存修改后的xml
@@ -74,7 +110,18 @@ module ZL
 	     end
 	     close_xml
 	 end 
-       
+         
+	def chang_xml(xmlpath,hostname,ip,sub_duration,pub_duration,sub_num,maxusers="40000",sub_phase_unit="second",sub_users_arrivalrate="50",sub_users_unit="second") 
+	    xmlojb(xmlpath)
+	    change_client_node(hostname,ip,maxusers)
+	    change_load_node(sub_duration,sub_num,pub_duration,sub_phase_unit,sub_users_arrivalrate,sub_users_unit)
+	     if @flag||@load_flag
+	    	 save_xml
+	     	 close_xml2
+	     end
+	     close_xml
+	end
+
       end #ParseXMl
 
 end #ZL
