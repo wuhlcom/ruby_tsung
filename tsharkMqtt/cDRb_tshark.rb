@@ -60,12 +60,12 @@ r_tshark.change_xml(@xmlpath,remote_host,remoteIP,@sub_duration,@pub_duration,@a
 puts "[#{Time.now}]step 5: tsung starting....."
 #tsung=ZL::Tsung.new(@xmlpath)
 #flag=tsung.tsung_start
-Thread.new do
+thr_remote=Thread.new do
 	flag1=r_tshark.tsung_start(@xmlpath)
 end
 sleep 2
 flag2=l_tshark.tsung_start(@xmlpath)
-
+sleep 5
 #6 结束tsung，停止抓包########################
 puts "[#{Time.now}]step 6: tsung finished  and tshark stoped....."
 #if flag1==true
@@ -73,8 +73,11 @@ puts "[#{Time.now}]step 6: tsung finished  and tshark stoped....."
 #end
 
 if flag2==true
+  r_tshark.linuxpkill("dumpcap")
   r_tshark.linuxpkill(@tshark_process)
   l_tshark.linuxpkill(@tshark_process)
+  l_tshark.linuxpkill("dumpcap")
+  Thread.kill thr_remote
 end
 
 #7 解析报文并写入数据库
@@ -90,5 +93,3 @@ r_tshark.write_revpubs(rev_filter)
 #8 写入最终结果 
 puts "[#{Time.now}]step 8: result..."
 l_tshark.write_result
-
-

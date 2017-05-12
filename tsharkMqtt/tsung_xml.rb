@@ -33,14 +33,14 @@ module ZL
 	     @flag=false 
 	     @xml.elements.each("//client")do |e| 
                 host=e.attributes["host"]
-                maxusesrs=e.attributes["maxusers"]
+                max=e.attributes["maxusers"]
 	        ip_addr=e.elements["ip"].attributes["value"]
                 if host!=hostname	
                    @flag=true 
                    e.attributes["host"]=hostname	
                 end
 
-                if host!=maxusers	
+                if max!=maxusers.to_s	
                     @flag=true||@flag 
                     e.attributes["maxusers"]=maxusers	
                 end 
@@ -54,14 +54,14 @@ module ZL
 
 	 def change_load_node(sub_phase_duration,sub_users_maxnum,pub_phase_duration,sub_phase_unit="second",sub_users_arrivalrate="50",sub_users_unit="second")
                 pub_phase_unit=sub_phase_unit
-                pub_users_arrivalrate=sub_users_maxnum
+                pub_users_arrivalrate=sub_users_arrivalrate
                 pub_users_maxnum=sub_users_maxnum
                 pub_users_unit=sub_users_unit
 		@load_flag=false
                 #############sub#############################
                 sub_arrivalphase=@xml.root.elements["load"].elements[1,"arrivalphase"]
 
-		if sub_arrivalphase.attributes["duration"]!=sub_phase_duration
+		if sub_arrivalphase.attributes["duration"]!=sub_phase_duration.to_s
 	                sub_arrivalphase.attributes["duration"]=sub_phase_duration
 			@load_flag=true
 	        end
@@ -69,14 +69,14 @@ module ZL
 
                 sub_users=sub_arrivalphase.elements["users"]
                 sub_users.attributes["arrivalrate"]=sub_users_arrivalrate
-                if sub_users.attributes["maxnumber"]!=sub_users_maxnum
+                if sub_users.attributes["maxnumber"]!=sub_users_maxnum.to_s
 	                sub_users.attributes["maxnumber"]=sub_users_maxnum
 			@load_flag=true||@load_flag
 		end
                 sub_users.attributes["unit"]=sub_users_unit
                 ##################pub#################
                 pub_arrivalphase=@xml.root.elements["load"].elements[2,"arrivalphase"]
-		if pub_arrivalphase.attributes["duration"]!=pub_phase_duration
+		if pub_arrivalphase.attributes["duration"]!=pub_phase_duration.to_s
                 	pub_arrivalphase.attributes["duration"]=pub_phase_duration
 			@load_flag=true||@load_flag
 		end
@@ -86,7 +86,20 @@ module ZL
                 pub_users.attributes["arrivalrate"]=pub_users_arrivalrate
                 pub_users.attributes["maxnumber"]=pub_users_maxnum
                 pub_users.attributes["unit"]=pub_users_unit
-   end
+	 end
+	 
+	 def change_sessions_node(timeout)
+		@timeout_flag=false
+     		sessions=@xml.root.elements["sessions"]
+	     	session=sessions.elements["session[@name='mqtt_subscriber']"]
+		timeout_request=session.elements[3,"request"]
+	        timeout_mqtt=timeout_request.elements["mqtt"]
+	        timeout_value=timeout_mqtt.attributes["timeout"]
+	        if timeout_value!=timeout.to_s
+        	   timeout_mqtt.attributes["timeout"]=timeout
+	           @timeout_flag=true
+	       end
+	 end
 
          def save_xml()
 	     @xmlfile2 = File.open(@xmlpath,"w")
@@ -111,11 +124,12 @@ module ZL
 	     close_xml
 	 end 
          
-	def chang_xml(xmlpath,hostname,ip,sub_duration,pub_duration,sub_num,maxusers="40000",sub_phase_unit="second",sub_users_arrivalrate="50",sub_users_unit="second") 
-	    xmlojb(xmlpath)
+	def change_xml(xmlpath,hostname,ip,sub_duration,pub_duration,sub_num,timeout,maxusers="40000",sub_phase_unit="second",sub_users_arrivalrate="50",sub_users_unit="second") 
+	    xmlobj(xmlpath)
 	    change_client_node(hostname,ip,maxusers)
 	    change_load_node(sub_duration,sub_num,pub_duration,sub_phase_unit,sub_users_arrivalrate,sub_users_unit)
-	     if @flag||@load_flag
+	    change_sessions_node(timeout)
+	     if @flag||@load_flag||@timeout_flag
 	    	 save_xml
 	     	 close_xml2
 	     end
