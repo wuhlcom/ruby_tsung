@@ -37,9 +37,9 @@ module ZL
     attr_accessor :pkgsdir,:pkgs_expdir,:pkgs
     def initialize(intf="eth0",pkgsdir=DEFAULT_PKGSDIR,filename="tsung_mqtt.pcapng")
        @intf=intf
-       @pkgsdir="./#{pkgsdir}/#{Time.now.strftime("%Y%m%d-%H%M%S")}"
+       @pkgsdir="./#{pkgsdir}"
        @filename=filename
-       @pkgspath="#{@pkgsdir}/#{@filename}"
+       #@pkgspath="#{@pkgsdir}/#{@filename}"
        @pkgs=nil
        @capthr=nil
     end
@@ -51,6 +51,9 @@ module ZL
   
     #创建抓包目录 
     def create_dirs
+       time=Time.now.strftime("%Y%m%d-%H%M%S")
+       @pkgsdir="#{@pkgsdir}/#{time}"
+       @pkgspath="#{@pkgsdir}/#{@filename}"
        mk_dir(@pkgsdir)
        @pkgs_expdir="#{@pkgsdir}/expkgs"
        mk_dir(@pkgs_expdir)

@@ -18,7 +18,7 @@
 @maxusers=40000 #一台客户机总users数量
 @sub_arrivalrate='50'#单位时间内产生user数量
 @sub_duration=50 #一个phase中生成users总时长
-@pub_duration=50 #一个phase中生成users总时长
+@pub_duration=70 #一个phase中生成users总时长
 @sub_timeout=@sub_duration+@pub_duration+30    #每个user等待收到pub消息时长,要大于sub和pub的和
 
 @redis_ip="192.168.10.200" #redis server ip
