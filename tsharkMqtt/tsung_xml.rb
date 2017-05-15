@@ -55,7 +55,7 @@ module ZL
 	 #change server node
 	 def change_server_node(srvip,srvport=1883)
 		@srv_flag=false
-		xml.elements.each("//server") do |e|   
+		@xml.elements.each("//server") do |e|   
 	   		host_ip=e.attributes["host"]
 			host_port=e.attributes["port"] 
 			if host_ip!=srvip  
