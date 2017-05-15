@@ -40,7 +40,7 @@
 			<users arrivalrate='50' maxnumber='1000' unit='second'/> 
 		 </arrivalphase> 
 		 
-		 <arrivalphase duration='70' phase='2' unit='second'> 
+		 <arrivalphase duration='50' phase='2' unit='second'> 
 			<session_setup name='mqtt_subscriber' probability='0'/> 
 			<session_setup name='mqtt_publisher' probability='100'/> 
 			<users arrivalrate='50' maxnumber='1000' unit='second'/> 
@@ -94,7 +94,7 @@
 			
 			<request>
 				<!-- wait for 60s -->
-				<mqtt timeout='150' type='waitForMessages'/>
+				<mqtt timeout='130' type='waitForMessages'/>
 			</request>
 
 			<!-- <request subst="true"> -->
@@ -109,5 +109,6 @@
 	
     </sessions>
 </tsung>
+
 
 
