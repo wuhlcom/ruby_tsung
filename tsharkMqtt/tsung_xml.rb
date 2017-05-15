@@ -51,6 +51,24 @@ module ZL
 	         end
     	     end
 	 end
+	
+	 #change server node
+	 def change_server_node(srvip,srvport=1883)
+		@srv_flag=false
+		xml.elements.each("//server") do |e|   
+	   		host_ip=e.attributes["host"]
+			host_port=e.attributes["port"] 
+			if host_ip!=srvip  
+		          @srv_flag=true 
+		          e.attributes["host"]=srvip 
+			end
+	
+		        if host_port!=srvport 
+			  @srv_flag=true||@srv_flag 
+			  e.attributes["port"]=srvport   
+		        end 
+	 	end
+	 end
 
 	 def change_load_node(sub_phase_duration,sub_users_maxnum,pub_phase_duration,sub_phase_unit="second",sub_users_arrivalrate="50",sub_users_unit="second")
                 pub_phase_unit=sub_phase_unit
@@ -124,12 +142,13 @@ module ZL
 	     close_xml
 	 end 
          
-	def change_xml(xmlpath,hostname,ip,sub_duration,pub_duration,sub_num,timeout,maxusers="40000",sub_phase_unit="second",sub_users_arrivalrate="50",sub_users_unit="second") 
+	def change_xml(xmlpath,hostname,ip,sub_duration,pub_duration,sub_num,timeout,srvip,maxusers="40000",sub_phase_unit="second",sub_users_arrivalrate="50",sub_users_unit="second") 
 	    xmlobj(xmlpath)
 	    change_client_node(hostname,ip,maxusers)
+	    change_server_node(srvip)
 	    change_load_node(sub_duration,sub_num,pub_duration,sub_phase_unit,sub_users_arrivalrate,sub_users_unit)
 	    change_sessions_node(timeout)
-	     if @flag||@load_flag||@timeout_flag
+	     if @flag||@load_flag||@timeout_flag||@srv_flag
 	    	 save_xml
 	     	 close_xml2
 	     end

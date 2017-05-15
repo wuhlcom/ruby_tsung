@@ -46,7 +46,7 @@ module ZL
 		num.times.each do |number|
 		    #file.puts "hmset CINFO:'#{id_pre}#{number}' USER #{usr} PASSWD #{pw}"
 		    id=create_id(id_pre,number)
-		    file.puts "hmset CINFO:'#{id}' USER #{usr} PASSWD #{pw}"
+		    file.puts "hmset CINFO:#{id} USER #{usr} PASSWD #{pw} TYPE tjWqnmM2j3APn4Mo ID #{id}"
 		end
 	    end
 	end
@@ -67,6 +67,7 @@ if __FILE__==$0
    include ZL::Redis
    num=10
    ip="192.168.10.200"
+   ip="192.168.10.8"
    id_pre="wuhongliang"
    usr="mqttclient"
    pw="mqttclient"
