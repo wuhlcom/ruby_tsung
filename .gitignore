@@ -8,4 +8,6 @@ testpkgdir
 *.pcapng
 tsungLogs
 tsung_logs
+csvs/
+redis_accounts/
 packets
