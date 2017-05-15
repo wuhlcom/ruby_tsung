@@ -26,7 +26,7 @@ module ZL
    
   # Writing
   # To a File
-  def tsung_csv(csv_path,id_pre,num,*args)
+  def tsung_csv(csv_path,num,id_pre,*args)
     csv_dir=File.dirname(csv_path)
     mk_dir(csv_dir)
     CSV.open(csv_path, "wb") do |csv|
@@ -51,5 +51,5 @@ if __FILE__==$0
  subject="testsubject"
  id_pre="testsubid"
  topic="tsungTopic"
- tsung_csv(csv_path,id_pre,num,subject,topic)
+ tsung_csv(csv_path,num,id_pre,topic)
 end
