@@ -26,12 +26,15 @@ module ZL
    
   # Writing
   # To a File
-  def tsung_csv(csv_path,num,*args)
+  def tsung_csv(csv_path,id_pre,num,*args)
     csv_dir=File.dirname(csv_path)
     mk_dir(csv_dir)
     CSV.open(csv_path, "wb") do |csv|
  	num.times.each do|i|
-    	 csv << args.map{|item|"#{item}#{i}"}
+              id=create_id(id_pre,i)
+    	      new_args=args.map{|item|"#{item}#{i}"}
+              values=new_args.unshift(id)
+    	      csv << values
         end 
     end
   end
@@ -44,9 +47,9 @@ end #zl
 if __FILE__==$0
  include ZL::TsungCSV
  csv_path="csvs/sub.csv"
- sid=1
- eid=1000
- subject="test"
+ num=1000
+ subject="testsubject"
+ id_pre="testsubid"
  topic="tsungTopic"
- tsung_csv(csv_path,eid,subject,topic)
+ tsung_csv(csv_path,id_pre,num,subject,topic)
 end

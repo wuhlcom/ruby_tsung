@@ -23,21 +23,6 @@ module ZL
 		rs.split("\n")
 	end
 
-	def create_id(id_pre,index,id_size=16)
-	   id_pre_size=id_pre.size
-	   index_size=index.to_s.size
-	   if id_pre_size<id_size
-	      zero_num=id_size-id_pre_size-index_size
-	      zeros="0"*zero_num
-	      id=id_pre+zeros+index.to_s
-	   elsif id_pre_size==id_size
-	      id_pre[-id_size..-1]=index.to_s
-	     id=id_pre
-	   else
-	      puts "ID config error!"
-	   end
-	end
-
         def hmset_file(num,ip,id_pre,usr,pw,filename="redis-accounts.txt",port="6379")
 	    @redis_dir="redis_accounts"
 	    mk_dir(@redis_dir)

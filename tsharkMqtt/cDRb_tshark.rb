@@ -52,9 +52,9 @@ r_tshark.tsung_csv(@pub_csv,@acc_num,pub_id_pre2,topic2,msg2)
 puts "[#{Time.now}]step 4:config tsung xml....."
 local_host=l_tshark.hostname
 remote_host=r_tshark.hostname
-l_tshark.change_xml(@xmlpath,local_host,localIP,@sub_duration,@pub_duration,@acc_num,@sub_timeout,@mqttsrv_ip)
+l_tshark.change_xml(@xmlpath,local_host,localIP,@sub_duration,@pub_duration,@acc_num,@mqttsrv_ip)
 remoteIP=r_tshark.ifip(@remote_intf)
-r_tshark.change_xml(@xmlpath,remote_host,remoteIP,@sub_duration,@pub_duration,@acc_num,@sub_timeout,@mqttsrv_ip)
+r_tshark.change_xml(@xmlpath,remote_host,remoteIP,@sub_duration,@pub_duration,@acc_num,@mqttsrv_ip)
 
 #5 开始tsung##############################
 puts "[#{Time.now}]step 5: tsung starting....."

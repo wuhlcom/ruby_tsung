@@ -53,6 +53,23 @@ module ZL
       def chmod_R(mode,file)
            `sudo chmod -R #{mode} #{file}` 	 
       end
+	
+      #创建指定长度的id
+      def create_id(id_pre,index,id_size=16)
+           id_pre_size=id_pre.size
+           index_size=index.to_s.size
+           if id_pre_size<id_size
+              zero_num=id_size-id_pre_size-index_size
+              zeros="0"*zero_num
+              id=id_pre+zeros+index.to_s
+           elsif id_pre_size==id_size
+              id_pre[-id_size..-1]=index.to_s
+             id=id_pre
+           else
+              puts "ID config error!"
+           end
+        end
+
 
    end #PubMethods
 end #ZL

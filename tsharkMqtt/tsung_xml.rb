@@ -142,11 +142,12 @@ module ZL
 	     close_xml
 	 end 
          
-	def change_xml(xmlpath,hostname,ip,sub_duration,pub_duration,sub_num,timeout,srvip,maxusers="40000",sub_phase_unit="second",sub_users_arrivalrate="50",sub_users_unit="second") 
+	def change_xml(xmlpath,hostname,ip,sub_duration,pub_duration,sub_num,srvip,maxusers="40000",sub_phase_unit="second",sub_users_arrivalrate="50",sub_users_unit="second") 
 	    xmlobj(xmlpath)
 	    change_client_node(hostname,ip,maxusers)
 	    change_server_node(srvip)
 	    change_load_node(sub_duration,sub_num,pub_duration,sub_phase_unit,sub_users_arrivalrate,sub_users_unit)
+	    timeout=sub_duration+pub_duration+30
 	    change_sessions_node(timeout)
 	     if @flag||@load_flag||@timeout_flag||@srv_flag
 	    	 save_xml
@@ -161,9 +162,14 @@ end #ZL
 
 if __FILE__==$0
   include ZL::ParseXML
-  xmlpath="./xmls/mqtt_csv.xml"
+  xmlpath="./xmls/mqtt.xml"
   hostname="zhilu"
   ip="192.168.10.31"
-  change_client(xmlpath,hostname,ip)
-
+  sub_duration=60
+  pub_duration=60
+  sub_num="1200"
+  timeout=120
+  srvip="192.168.10.200"
+  #change_client(xmlpath,hostname,ip)
+  change_xml(xmlpath,hostname,ip,sub_duration,pub_duration,sub_num,srvip)
 end
