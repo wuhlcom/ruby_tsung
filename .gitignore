@@ -6,6 +6,8 @@ testpkgdir
 *.html
 *.pcap
 *.pcapng
+*.txt
+*.csv
 tsungLogs
 tsung_logs
 csvs/
