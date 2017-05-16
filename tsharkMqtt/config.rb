@@ -12,7 +12,7 @@
 @drbsrv_ip="192.168.10.30" #druby server ip
 @drbport="65534" #drb端口
 @remote_clientIP=@drbsrv_ip #tsung remote client
-@mqttsrv_ip="192.168.10.188" #mqtt server ip
+@mqttsrv_ip="192.168.10.8" #mqtt server ip
 
 @acc_num=1000 #创建redis用户数量,即tsung中一个phase中users数量
 @maxusers=40000 #一台客户机总users数量

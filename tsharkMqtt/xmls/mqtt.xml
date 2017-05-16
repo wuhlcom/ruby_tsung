@@ -3,25 +3,25 @@
 <!DOCTYPE tsung SYSTEM "/usr/share/tsung/tsung-1.0.dtd">
 <tsung loglevel='notice' version='1.0'>
    	 <clients>
-       	     <client host='zhilu' maxusers='40000'>
+       	     <client host='ubuntu14042' maxusers='40000'>
    	     	<ip value='192.168.10.31'/>
  	     </client> 
    	 </clients>
 	<servers>
-              <server host='192.168.10.200' port='1883' type='tcp'/>
+              <server host='192.168.10.188' port='1883' type='tcp'/>
 	</servers>
 
     <load>
-	         <arrivalphase duration='60' phase='1' unit='second'> 
+	         <arrivalphase duration='50' phase='1' unit='second'> 
 			<session_setup name='mqtt_subscriber' probability='100'/> 
 			<session_setup name='mqtt_publisher' probability='0'/> 
-			<users arrivalrate='50' maxnumber='1200' unit='second'/> 
+			<users arrivalrate='50' maxnumber='1000' unit='second'/> 
 		 </arrivalphase> 
 		 
-		 <arrivalphase duration='60' phase='2' unit='second'> 
+		 <arrivalphase duration='50' phase='2' unit='second'> 
 			<session_setup name='mqtt_subscriber' probability='0'/> 
 			<session_setup name='mqtt_publisher' probability='100'/> 
-			<users arrivalrate='50' maxnumber='1200' unit='second'/> 
+			<users arrivalrate='50' maxnumber='1000' unit='second'/> 
 		</arrivalphase> 
     </load>
 
@@ -72,7 +72,7 @@
 			
 			<request>
 				<!-- wait for 60s -->
-				<mqtt timeout='150' type='waitForMessages'/>
+				<mqtt timeout='130' type='waitForMessages'/>
 			</request>
 
 			<!-- <request subst="true"> -->
@@ -87,6 +87,7 @@
 	
     </sessions>
 </tsung>
+
 
 
 

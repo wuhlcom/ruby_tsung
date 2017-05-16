@@ -23,7 +23,7 @@ module ZL
 		rs.split("\n")
 	end
 
-        def hmset_file(num,ip,id_pre,usr,pw,filename="redis-accounts.txt",port="6379")
+        def hmset_file(num,ip,id_pre,usr,pw,filename="redis_accounts.txt",port="6379",type="tjWqnmM2j3APn4Mo")
 	    @redis_dir="redis_accounts"
 	    mk_dir(@redis_dir)
 	    @redis_accfile="redis_accounts/#{filename}"
@@ -31,16 +31,16 @@ module ZL
 		num.times.each do |number|
 		    #file.puts "hmset CINFO:'#{id_pre}#{number}' USER #{usr} PASSWD #{pw}"
 		    id=create_id(id_pre,number)
-		    file.puts "hmset CINFO:#{id} USER #{usr} PASSWD #{pw} TYPE tjWqnmM2j3APn4Mo ID #{id}"
+		    file.puts "hmset CINFO:#{id} USER #{usr} PASSWD #{pw} TYPE #{type} ID #{id}"
 		end
 	    end
 	end
 	
 	def hmset_batch(ip,port="6379")
-	    `redis-cli -h #{ip} -p #{port} < #{@redis_accfile} >> "#{@redis_dir}/redis-acc-log.log"`
+	    `redis-cli -h #{ip} -p #{port} < #{@redis_accfile} >> "#{@redis_dir}/redis_accounts.log"`
 	end
 	
-	def hmset_accounts(num,ip,id_pre,usr,pw,filename="redis-accounts.txt",port="6379")
+	def hmset_accounts(num,ip,id_pre,usr,pw,filename="redis_accounts.txt",port="6379")
         	 hmset_file(num,ip,id_pre,usr,pw,filename,port)
 		 hmset_batch(ip,port)
 	end

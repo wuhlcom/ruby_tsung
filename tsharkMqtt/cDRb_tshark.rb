@@ -30,11 +30,12 @@ pub_id_pre1="tsungpubz"
 
 sub_id_pre2="tsungsubl"
 pub_id_pre2="tsungpubl"
-
-l_tshark.hmset_accounts(@acc_num,@redis_ip,sub_id_pre1,"mqttclient","mqttclient")
-l_tshark.hmset_accounts(@acc_num,@redis_ip,pub_id_pre1,"mqttclient","mqttclient")
-r_tshark.hmset_accounts(@acc_num,@redis_ip,sub_id_pre2,"mqttclient","mqttclient")
-r_tshark.hmset_accounts(@acc_num,@redis_ip,pub_id_pre2,"mqttclient","mqttclient")
+mqttusr="mqttclient"
+mqttpw="mqttclient"
+l_tshark.hmset_accounts(@acc_num,@redis_ip,sub_id_pre1,mqttusr,mqttpw)
+l_tshark.hmset_accounts(@acc_num,@redis_ip,pub_id_pre1,mqttusr,mqttpw)
+r_tshark.hmset_accounts(@acc_num,@redis_ip,sub_id_pre2,mqttusr,mqttpw)
+r_tshark.hmset_accounts(@acc_num,@redis_ip,pub_id_pre2,mqttusr,mqttpw)
 
 #3 创建CSV文件
 puts "[#{Time.now}]step 3:create tsung csv....."
